@@ -2,14 +2,29 @@ import { isAddress, getAddress } from 'viem';
 import { EIP681Params, TransactionFormData } from '../types';
 
 /**
+ * Safely converts an address to its checksummed format
+ * Returns the original address if checksumming fails
+ */
+export function toChecksumAddress(address: string): string {
+  try {
+    return getAddress(address);
+  } catch {
+    // If getAddress fails, return the original address
+    // This handles edge cases where the address might be invalid
+    return address;
+  }
+}
+
+/**
  * Generates an EIP-681 compliant URL for Ethereum transactions
  * Format: ethereum:<address>[@<chain_id>][/<function_name>][?<parameters>]
  */
 export function generateEIP681URL(params: EIP681Params): string {
   const { chainId, address, functionName, value, gas, gasLimit, gasPrice, parameters } = params;
 
-  // Start with the ethereum scheme and address
-  let url = `ethereum:${address}`;
+  // Start with the ethereum scheme and checksummed address
+  const checksummedAddress = toChecksumAddress(address);
+  let url = `ethereum:${checksummedAddress}`;
 
   // Add chain ID if specified
   if (chainId && chainId !== 1) {
@@ -43,7 +58,9 @@ export function generateEIP681URL(params: EIP681Params): string {
   // Add custom parameters
   if (parameters) {
     Object.entries(parameters).forEach(([key, val]) => {
-      queryParams.push(`${key}=${encodeURIComponent(val)}`);
+      // Checksum address parameters
+      const processedVal = key === 'address' ? toChecksumAddress(val) : val;
+      queryParams.push(`${key}=${encodeURIComponent(processedVal)}`);
     });
   }
 
@@ -66,10 +83,10 @@ export function generateTokenTransferURL(
 ): string {
   const params: EIP681Params = {
     chainId,
-    address: tokenAddress,
+    address: toChecksumAddress(tokenAddress),
     functionName: 'transfer',
     parameters: {
-      address: toAddress,
+      address: toChecksumAddress(toAddress),
       ...(amount && amount !== '0' && parseFloat(amount) > 0 ? { uint256: amount } : {})
     }
   };
@@ -87,7 +104,8 @@ export function generateETHTransferURL(
   gasLimit?: string,
   gasPrice?: string
 ): string {
-  let url = `ethereum:${toAddress}`;
+  const checksummedToAddress = toChecksumAddress(toAddress);
+  let url = `ethereum:${checksummedToAddress}`;
 
   // Add chain ID if specified (mainnet is explicitly shown)
   if (chainId) {
@@ -131,7 +149,8 @@ export function formDataToEIP681URL(formData: TransactionFormData): string {
   }
 
   // Native ETH transfer - value is already in wei from form
-  let url = `ethereum:${toAddress}`;
+  const checksummedToAddress = toChecksumAddress(toAddress);
+  let url = `ethereum:${checksummedToAddress}`;
 
   // Add chain ID if specified
   if (chainId) {
@@ -218,10 +237,17 @@ export function parseEIP681URL(url: string): any {
     // For the test format, return a simpler structure
     const result: any = {
       scheme: 'ethereum',
-      address,
+      address: toChecksumAddress(address),
       chainId,
       functionName,
-      parameters: Object.keys(parameters).length > 0 ? parameters : undefined
+      parameters: Object.keys(parameters).length > 0 ? 
+        // Also checksum address parameters when parsing
+        Object.fromEntries(
+          Object.entries(parameters).map(([key, val]) => [
+            key, 
+            key === 'address' ? toChecksumAddress(val) : val
+          ])
+        ) : undefined
     };
 
     return result;
