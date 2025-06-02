@@ -202,7 +202,7 @@ function getFallbackChains(): ExtendedChain[] {
 }
 
 // Initialize and export chains
-let CHAINS: ExtendedChain[] = [];
+const CHAINS: ExtendedChain[] = [];
 
 // Load chains asynchronously
 getChains().then(chains => {
