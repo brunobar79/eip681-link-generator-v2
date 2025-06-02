@@ -19,7 +19,7 @@ export type IncreaseTimeErrorType = RequestErrorType | ErrorType
 /**
  * Jump forward in time by the given amount of time, in seconds.
  *
- * - Docs: https://viem.sh/docs/actions/test/increaseTime.html
+ * - Docs: https://viem.sh/docs/actions/test/increaseTime
  *
  * @param client - Client to use
  * @param parameters – {@link IncreaseTimeParameters}
@@ -39,10 +39,10 @@ export type IncreaseTimeErrorType = RequestErrorType | ErrorType
  * })
  */
 export async function increaseTime<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { seconds }: IncreaseTimeParameters,
 ) {
   return await client.request({

@@ -13,7 +13,7 @@ export type SetLoggingEnabledErrorType = RequestErrorType | ErrorType
 /**
  * Enable or disable logging on the test node network.
  *
- * - Docs: https://viem.sh/docs/actions/test/setLoggingEnabled.html
+ * - Docs: https://viem.sh/docs/actions/test/setLoggingEnabled
  *
  * @param client - Client to use
  *
@@ -30,10 +30,10 @@ export type SetLoggingEnabledErrorType = RequestErrorType | ErrorType
  * await setLoggingEnabled(client)
  */
 export async function setLoggingEnabled<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   enabled: boolean,
 ) {
   await client.request({

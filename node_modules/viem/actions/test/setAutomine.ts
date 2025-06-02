@@ -13,7 +13,7 @@ export type SetAutomineErrorType = RequestErrorType | ErrorType
 /**
  * Enables or disables the automatic mining of new blocks with each new transaction submitted to the network.
  *
- * - Docs: https://viem.sh/docs/actions/test/setAutomine.html
+ * - Docs: https://viem.sh/docs/actions/test/setAutomine
  *
  * @param client - Client to use
  *
@@ -30,10 +30,10 @@ export type SetAutomineErrorType = RequestErrorType | ErrorType
  * await setAutomine(client)
  */
 export async function setAutomine<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   enabled: boolean,
 ) {
   if (client.mode === 'ganache') {

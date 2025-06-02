@@ -13,7 +13,7 @@ export type GetPermissionsErrorType = RequestErrorType | ErrorType
 /**
  * Gets the wallets current permissions.
  *
- * - Docs: https://viem.sh/docs/actions/wallet/getPermissions.html
+ * - Docs: https://viem.sh/docs/actions/wallet/getPermissions
  * - JSON-RPC Methods: [`wallet_getPermissions`](https://eips.ethereum.org/EIPS/eip-2255)
  *
  * @param client - Client to use
@@ -31,9 +31,12 @@ export type GetPermissionsErrorType = RequestErrorType | ErrorType
  * const permissions = await getPermissions(client)
  */
 export async function getPermissions<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined = undefined,
->(client: Client<Transport, TChain, TAccount>) {
-  const permissions = await client.request({ method: 'wallet_getPermissions' })
+  chain extends Chain | undefined,
+  account extends Account | undefined = undefined,
+>(client: Client<Transport, chain, account>) {
+  const permissions = await client.request(
+    { method: 'wallet_getPermissions' },
+    { dedupe: true },
+  )
   return permissions
 }

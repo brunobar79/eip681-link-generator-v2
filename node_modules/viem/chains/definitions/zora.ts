@@ -1,37 +1,51 @@
+import { chainConfig } from '../../op-stack/chainConfig.js'
 import { defineChain } from '../../utils/chain/defineChain.js'
-import { formattersOptimism } from '../optimism/formatters.js'
 
-export const zora = /*#__PURE__*/ defineChain(
-  {
-    id: 7777777,
-    name: 'Zora',
-    network: 'zora',
-    nativeCurrency: {
-      decimals: 18,
-      name: 'Ether',
-      symbol: 'ETH',
+const sourceId = 1 // mainnet
+
+export const zora = /*#__PURE__*/ defineChain({
+  ...chainConfig,
+  id: 7777777,
+  name: 'Zora',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.zora.energy'],
+      webSocket: ['wss://rpc.zora.energy'],
     },
-    rpcUrls: {
-      default: {
-        http: ['https://rpc.zora.energy'],
-        webSocket: ['wss://rpc.zora.energy'],
+  },
+  blockExplorers: {
+    default: {
+      name: 'Explorer',
+      url: 'https://explorer.zora.energy',
+      apiUrl: 'https://explorer.zora.energy/api',
+    },
+  },
+  contracts: {
+    ...chainConfig.contracts,
+    l2OutputOracle: {
+      [sourceId]: {
+        address: '0x9E6204F750cD866b299594e2aC9eA824E2e5f95c',
       },
-      public: {
-        http: ['https://rpc.zora.energy'],
-        webSocket: ['wss://rpc.zora.energy'],
+    },
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 5882,
+    },
+    portal: {
+      [sourceId]: {
+        address: '0x1a0ad011913A150f69f6A19DF447A0CfD9551054',
       },
     },
-    blockExplorers: {
-      default: { name: 'Explorer', url: 'https://explorer.zora.energy' },
-    },
-    contracts: {
-      multicall3: {
-        address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-        blockCreated: 5882,
+    l1StandardBridge: {
+      [sourceId]: {
+        address: '0x3e2Ea9B92B7E48A52296fD261dc26fd995284631',
       },
     },
   },
-  {
-    formatters: formattersOptimism,
-  },
-)
+  sourceId,
+})

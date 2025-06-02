@@ -18,7 +18,7 @@ export type SetIntervalMiningErrorType = RequestErrorType | ErrorType
 /**
  * Sets the automatic mining interval (in seconds) of blocks. Setting the interval to 0 will disable automatic mining.
  *
- * - Docs: https://viem.sh/docs/actions/test/setIntervalMining.html
+ * - Docs: https://viem.sh/docs/actions/test/setIntervalMining
  *
  * @param client - Client to use
  * @param parameters – {@link SetIntervalMiningParameters}
@@ -36,10 +36,10 @@ export type SetIntervalMiningErrorType = RequestErrorType | ErrorType
  * await setIntervalMining(client, { interval: 5 })
  */
 export async function setIntervalMining<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { interval }: SetIntervalMiningParameters,
 ) {
   const interval_ = (() => {

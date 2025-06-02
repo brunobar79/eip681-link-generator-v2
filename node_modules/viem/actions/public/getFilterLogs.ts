@@ -2,19 +2,14 @@ import type { Abi, AbiEvent, ExtractAbiEvent } from 'abitype'
 
 import type { Client } from '../../clients/createClient.js'
 import type { Transport } from '../../clients/transports/createTransport.js'
-import {
-  DecodeLogDataMismatch,
-  DecodeLogTopicsMismatch,
-} from '../../errors/abi.js'
+
 import type { ErrorType } from '../../errors/utils.js'
 import type { BlockNumber, BlockTag } from '../../types/block.js'
 import type { Chain } from '../../types/chain.js'
 import type { Filter } from '../../types/filter.js'
 import type { Log } from '../../types/log.js'
-import {
-  type DecodeEventLogErrorType,
-  decodeEventLog,
-} from '../../utils/abi/decodeEventLog.js'
+import type { DecodeEventLogErrorType } from '../../utils/abi/decodeEventLog.js'
+import { parseEventLogs } from '../../utils/abi/parseEventLogs.js'
 import type { RequestErrorType } from '../../utils/buildRequest.js'
 import {
   type FormatLogErrorType,
@@ -22,29 +17,29 @@ import {
 } from '../../utils/formatters/log.js'
 
 export type GetFilterLogsParameters<
-  TAbi extends Abi | readonly unknown[] | undefined = undefined,
-  TEventName extends string | undefined = undefined,
-  TStrict extends boolean | undefined = undefined,
-  TFromBlock extends BlockNumber | BlockTag | undefined = undefined,
-  TToBlock extends BlockNumber | BlockTag | undefined = undefined,
+  abi extends Abi | readonly unknown[] | undefined = undefined,
+  eventName extends string | undefined = undefined,
+  strict extends boolean | undefined = undefined,
+  fromBlock extends BlockNumber | BlockTag | undefined = undefined,
+  toBlock extends BlockNumber | BlockTag | undefined = undefined,
 > = {
-  filter: Filter<'event', TAbi, TEventName, any, TStrict, TFromBlock, TToBlock>
+  filter: Filter<'event', abi, eventName, any, strict, fromBlock, toBlock>
 }
 export type GetFilterLogsReturnType<
-  TAbi extends Abi | readonly unknown[] | undefined = undefined,
-  TEventName extends string | undefined = undefined,
-  TStrict extends boolean | undefined = undefined,
-  TFromBlock extends BlockNumber | BlockTag | undefined = undefined,
-  TToBlock extends BlockNumber | BlockTag | undefined = undefined,
-  _AbiEvent extends AbiEvent | undefined = TAbi extends Abi
-    ? TEventName extends string
-      ? ExtractAbiEvent<TAbi, TEventName>
+  abi extends Abi | readonly unknown[] | undefined = undefined,
+  eventName extends string | undefined = undefined,
+  strict extends boolean | undefined = undefined,
+  fromBlock extends BlockNumber | BlockTag | undefined = undefined,
+  toBlock extends BlockNumber | BlockTag | undefined = undefined,
+  _AbiEvent extends AbiEvent | undefined = abi extends Abi
+    ? eventName extends string
+      ? ExtractAbiEvent<abi, eventName>
       : undefined
     : undefined,
   _Pending extends boolean =
-    | (TFromBlock extends 'pending' ? true : false)
-    | (TToBlock extends 'pending' ? true : false),
-> = Log<bigint, number, _Pending, _AbiEvent, TStrict, TAbi, TEventName>[]
+    | (fromBlock extends 'pending' ? true : false)
+    | (toBlock extends 'pending' ? true : false),
+> = Log<bigint, number, _Pending, _AbiEvent, strict, abi, eventName>[]
 
 export type GetFilterLogsErrorType =
   | RequestErrorType
@@ -55,7 +50,7 @@ export type GetFilterLogsErrorType =
 /**
  * Returns a list of event logs since the filter was created.
  *
- * - Docs: https://viem.sh/docs/actions/public/getFilterLogs.html
+ * - Docs: https://viem.sh/docs/actions/public/getFilterLogs
  * - JSON-RPC Methods: [`eth_getFilterLogs`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getfilterlogs)
  *
  * `getFilterLogs` is only compatible with **event filters**.
@@ -80,19 +75,19 @@ export type GetFilterLogsErrorType =
  * const logs = await getFilterLogs(client, { filter })
  */
 export async function getFilterLogs<
-  TChain extends Chain | undefined,
-  const TAbi extends Abi | readonly unknown[] | undefined,
-  TEventName extends string | undefined,
-  TStrict extends boolean | undefined = undefined,
-  TFromBlock extends BlockNumber | BlockTag | undefined = undefined,
-  TToBlock extends BlockNumber | BlockTag | undefined = undefined,
+  chain extends Chain | undefined,
+  const abi extends Abi | readonly unknown[] | undefined,
+  eventName extends string | undefined,
+  strict extends boolean | undefined = undefined,
+  fromBlock extends BlockNumber | BlockTag | undefined = undefined,
+  toBlock extends BlockNumber | BlockTag | undefined = undefined,
 >(
-  _client: Client<Transport, TChain>,
+  _client: Client<Transport, chain>,
   {
     filter,
-  }: GetFilterLogsParameters<TAbi, TEventName, TStrict, TFromBlock, TToBlock>,
+  }: GetFilterLogsParameters<abi, eventName, strict, fromBlock, toBlock>,
 ): Promise<
-  GetFilterLogsReturnType<TAbi, TEventName, TStrict, TFromBlock, TToBlock>
+  GetFilterLogsReturnType<abi, eventName, strict, fromBlock, toBlock>
 > {
   const strict = filter.strict ?? false
 
@@ -100,41 +95,25 @@ export async function getFilterLogs<
     method: 'eth_getFilterLogs',
     params: [filter.id],
   })
-  return logs
-    .map((log) => {
-      try {
-        const { eventName, args } =
-          'abi' in filter && filter.abi
-            ? decodeEventLog({
-                abi: filter.abi,
-                data: log.data,
-                topics: log.topics as any,
-                strict,
-              })
-            : { eventName: undefined, args: undefined }
-        return formatLog(log, { args, eventName })
-      } catch (err) {
-        let eventName
-        let isUnnamed
-        if (
-          err instanceof DecodeLogDataMismatch ||
-          err instanceof DecodeLogTopicsMismatch
-        ) {
-          // If strict mode is on, and log data/topics do not match event definition, skip.
-          if ('strict' in filter && filter.strict) return
-          eventName = err.abiItem.name
-          isUnnamed = err.abiItem.inputs?.some((x) => !('name' in x && x.name))
-        }
 
-        // Set args to empty if there is an error decoding (e.g. indexed/non-indexed params mismatch).
-        return formatLog(log, { args: isUnnamed ? [] : {}, eventName })
-      }
-    })
-    .filter(Boolean) as unknown as GetFilterLogsReturnType<
-    TAbi,
-    TEventName,
-    TStrict,
-    TFromBlock,
-    TToBlock
+  const formattedLogs = logs.map((log) => formatLog(log))
+  if (!filter.abi)
+    return formattedLogs as GetFilterLogsReturnType<
+      abi,
+      eventName,
+      strict,
+      fromBlock,
+      toBlock
+    >
+  return parseEventLogs({
+    abi: filter.abi,
+    logs: formattedLogs,
+    strict,
+  }) as unknown as GetFilterLogsReturnType<
+    abi,
+    eventName,
+    strict,
+    fromBlock,
+    toBlock
   >
 }

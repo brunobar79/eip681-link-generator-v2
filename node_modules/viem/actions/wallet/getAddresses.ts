@@ -21,7 +21,7 @@ export type GetAddressesErrorType =
 /**
  * Returns a list of account addresses owned by the wallet or client.
  *
- * - Docs: https://viem.sh/docs/actions/wallet/getAddresses.html
+ * - Docs: https://viem.sh/docs/actions/wallet/getAddresses
  * - JSON-RPC Methods: [`eth_accounts`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_accounts)
  *
  * @param client - Client to use
@@ -39,12 +39,13 @@ export type GetAddressesErrorType =
  * const accounts = await getAddresses(client)
  */
 export async function getAddresses<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined = undefined,
->(
-  client: Client<Transport, TChain, TAccount>,
-): Promise<GetAddressesReturnType> {
+  chain extends Chain | undefined,
+  account extends Account | undefined = undefined,
+>(client: Client<Transport, chain, account>): Promise<GetAddressesReturnType> {
   if (client.account?.type === 'local') return [client.account.address]
-  const addresses = await client.request({ method: 'eth_accounts' })
+  const addresses = await client.request(
+    { method: 'eth_accounts' },
+    { dedupe: true },
+  )
   return addresses.map((address) => checksumAddress(address))
 }

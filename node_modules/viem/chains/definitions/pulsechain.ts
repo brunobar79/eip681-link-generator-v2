@@ -2,7 +2,6 @@ import { defineChain } from '../../utils/chain/defineChain.js'
 
 export const pulsechain = /*#__PURE__*/ defineChain({
   id: 369,
-  network: 'pulsechain',
   name: 'PulseChain',
   nativeCurrency: { name: 'Pulse', symbol: 'PLS', decimals: 18 },
   testnet: false,
@@ -11,15 +10,12 @@ export const pulsechain = /*#__PURE__*/ defineChain({
       http: ['https://rpc.pulsechain.com'],
       webSocket: ['wss://ws.pulsechain.com'],
     },
-    public: {
-      http: ['https://rpc.pulsechain.com'],
-      webSocket: ['wss://ws.pulsechain.com'],
-    },
   },
   blockExplorers: {
     default: {
       name: 'PulseScan',
       url: 'https://scan.pulsechain.com',
+      apiUrl: 'https://api.scan.pulsechain.com/api',
     },
   },
   contracts: {

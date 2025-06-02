@@ -14,25 +14,25 @@ import {
 import { type BytesToHexErrorType, bytesToHex } from './toHex.js'
 
 export type FromBytesParameters<
-  TTo extends 'string' | 'hex' | 'bigint' | 'number' | 'boolean',
+  to extends 'string' | 'hex' | 'bigint' | 'number' | 'boolean',
 > =
-  | TTo
+  | to
   | {
       /** Size of the bytes. */
-      size?: number
+      size?: number | undefined
       /** Type to convert to. */
-      to: TTo
+      to: to
     }
 
-export type FromBytesReturnType<TTo> = TTo extends 'string'
+export type FromBytesReturnType<to> = to extends 'string'
   ? string
-  : TTo extends 'hex'
+  : to extends 'hex'
     ? Hex
-    : TTo extends 'bigint'
+    : to extends 'bigint'
       ? bigint
-      : TTo extends 'number'
+      : to extends 'number'
         ? number
-        : TTo extends 'boolean'
+        : to extends 'boolean'
           ? boolean
           : never
 
@@ -47,8 +47,8 @@ export type FromBytesErrorType =
 /**
  * Decodes a byte array into a UTF-8 string, hex value, number, bigint or boolean.
  *
- * - Docs: https://viem.sh/docs/utilities/fromBytes.html
- * - Example: https://viem.sh/docs/utilities/fromBytes.html#usage
+ * - Docs: https://viem.sh/docs/utilities/fromBytes
+ * - Example: https://viem.sh/docs/utilities/fromBytes#usage
  *
  * @param bytes Byte array to decode.
  * @param toOrOpts Type to convert to or options.
@@ -68,30 +68,30 @@ export type FromBytesErrorType =
  * // 'Hello world'
  */
 export function fromBytes<
-  TTo extends 'string' | 'hex' | 'bigint' | 'number' | 'boolean',
+  to extends 'string' | 'hex' | 'bigint' | 'number' | 'boolean',
 >(
   bytes: ByteArray,
-  toOrOpts: FromBytesParameters<TTo>,
-): FromBytesReturnType<TTo> {
+  toOrOpts: FromBytesParameters<to>,
+): FromBytesReturnType<to> {
   const opts = typeof toOrOpts === 'string' ? { to: toOrOpts } : toOrOpts
   const to = opts.to
 
   if (to === 'number')
-    return bytesToNumber(bytes, opts) as FromBytesReturnType<TTo>
+    return bytesToNumber(bytes, opts) as FromBytesReturnType<to>
   if (to === 'bigint')
-    return bytesToBigInt(bytes, opts) as FromBytesReturnType<TTo>
+    return bytesToBigInt(bytes, opts) as FromBytesReturnType<to>
   if (to === 'boolean')
-    return bytesToBool(bytes, opts) as FromBytesReturnType<TTo>
+    return bytesToBool(bytes, opts) as FromBytesReturnType<to>
   if (to === 'string')
-    return bytesToString(bytes, opts) as FromBytesReturnType<TTo>
-  return bytesToHex(bytes, opts) as FromBytesReturnType<TTo>
+    return bytesToString(bytes, opts) as FromBytesReturnType<to>
+  return bytesToHex(bytes, opts) as FromBytesReturnType<to>
 }
 
 export type BytesToBigIntOpts = {
   /** Whether or not the number of a signed representation. */
-  signed?: boolean
+  signed?: boolean | undefined
   /** Size of the bytes. */
-  size?: number
+  size?: number | undefined
 }
 
 export type BytesToBigIntErrorType =
@@ -102,7 +102,7 @@ export type BytesToBigIntErrorType =
 /**
  * Decodes a byte array into a bigint.
  *
- * - Docs: https://viem.sh/docs/utilities/fromBytes.html#bytestobigint
+ * - Docs: https://viem.sh/docs/utilities/fromBytes#bytestobigint
  *
  * @param bytes Byte array to decode.
  * @param opts Options.
@@ -119,12 +119,12 @@ export function bytesToBigInt(
 ): bigint {
   if (typeof opts.size !== 'undefined') assertSize(bytes, { size: opts.size })
   const hex = bytesToHex(bytes, opts)
-  return hexToBigInt(hex)
+  return hexToBigInt(hex, opts)
 }
 
 export type BytesToBoolOpts = {
   /** Size of the bytes. */
-  size?: number
+  size?: number | undefined
 }
 
 export type BytesToBoolErrorType =
@@ -135,7 +135,7 @@ export type BytesToBoolErrorType =
 /**
  * Decodes a byte array into a boolean.
  *
- * - Docs: https://viem.sh/docs/utilities/fromBytes.html#bytestobool
+ * - Docs: https://viem.sh/docs/utilities/fromBytes#bytestobool
  *
  * @param bytes Byte array to decode.
  * @param opts Options.
@@ -170,7 +170,7 @@ export type BytesToNumberErrorType =
 /**
  * Decodes a byte array into a number.
  *
- * - Docs: https://viem.sh/docs/utilities/fromBytes.html#bytestonumber
+ * - Docs: https://viem.sh/docs/utilities/fromBytes#bytestonumber
  *
  * @param bytes Byte array to decode.
  * @param opts Options.
@@ -187,12 +187,12 @@ export function bytesToNumber(
 ): number {
   if (typeof opts.size !== 'undefined') assertSize(bytes, { size: opts.size })
   const hex = bytesToHex(bytes, opts)
-  return hexToNumber(hex)
+  return hexToNumber(hex, opts)
 }
 
 export type BytesToStringOpts = {
   /** Size of the bytes. */
-  size?: number
+  size?: number | undefined
 }
 
 export type BytesToStringErrorType =
@@ -203,7 +203,7 @@ export type BytesToStringErrorType =
 /**
  * Decodes a byte array into a UTF-8 string.
  *
- * - Docs: https://viem.sh/docs/utilities/fromBytes.html#bytestostring
+ * - Docs: https://viem.sh/docs/utilities/fromBytes#bytestostring
  *
  * @param bytes Byte array to decode.
  * @param opts Options.

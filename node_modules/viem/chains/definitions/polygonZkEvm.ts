@@ -3,13 +3,9 @@ import { defineChain } from '../../utils/chain/defineChain.js'
 export const polygonZkEvm = /*#__PURE__*/ defineChain({
   id: 1101,
   name: 'Polygon zkEVM',
-  network: 'polygon-zkevm',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://zkevm-rpc.com'],
-    },
-    public: {
       http: ['https://zkevm-rpc.com'],
     },
   },
@@ -17,6 +13,7 @@ export const polygonZkEvm = /*#__PURE__*/ defineChain({
     default: {
       name: 'PolygonScan',
       url: 'https://zkevm.polygonscan.com',
+      apiUrl: 'https://api-zkevm.polygonscan.com/api',
     },
   },
   contracts: {

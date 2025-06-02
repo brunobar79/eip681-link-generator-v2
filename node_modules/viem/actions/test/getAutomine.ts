@@ -15,7 +15,7 @@ export type GetAutomineErrorType = RequestErrorType | ErrorType
 /**
  * Returns the automatic mining status of the node.
  *
- * - Docs: https://viem.sh/docs/actions/test/getAutomine.html
+ * - Docs: https://viem.sh/docs/actions/test/getAutomine
  *
  * @param client - Client to use
  * @returns Whether or not the node is auto mining. {@link GetAutomineReturnType}
@@ -33,10 +33,10 @@ export type GetAutomineErrorType = RequestErrorType | ErrorType
  * const isAutomining = await getAutomine(client)
  */
 export async function getAutomine<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
 ): Promise<GetAutomineReturnType> {
   if (client.mode === 'ganache')
     return await client.request({

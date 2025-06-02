@@ -3,7 +3,6 @@ import { defineChain } from '../../utils/chain/defineChain.js'
 export const edgeware = /*#__PURE__*/ defineChain({
   id: 2021,
   name: 'Edgeware EdgeEVM Mainnet',
-  network: 'edgeware',
   nativeCurrency: {
     decimals: 18,
     name: 'Edgeware',
@@ -11,11 +10,13 @@ export const edgeware = /*#__PURE__*/ defineChain({
   },
   rpcUrls: {
     default: { http: ['https://edgeware-evm.jelliedowl.net'] },
-    public: { http: ['https://edgeware-evm.jelliedowl.net'] },
   },
   blockExplorers: {
-    etherscan: { name: 'Edgscan by Bharathcoorg', url: 'https://edgscan.live' },
-    default: { name: 'Edgscan by Bharathcoorg', url: 'https://edgscan.live' },
+    default: {
+      name: 'Edgscan by Bharathcoorg',
+      url: 'https://edgscan.live',
+      apiUrl: 'https://edgscan.live/api',
+    },
   },
   contracts: {
     multicall3: {

@@ -3,17 +3,12 @@ import { defineChain } from '../../utils/chain/defineChain.js'
 export const moonbeam = /*#__PURE__*/ defineChain({
   id: 1284,
   name: 'Moonbeam',
-  network: 'moonbeam',
   nativeCurrency: {
     decimals: 18,
     name: 'GLMR',
     symbol: 'GLMR',
   },
   rpcUrls: {
-    public: {
-      http: ['https://moonbeam.public.blastapi.io'],
-      webSocket: ['wss://moonbeam.public.blastapi.io'],
-    },
     default: {
       http: ['https://moonbeam.public.blastapi.io'],
       webSocket: ['wss://moonbeam.public.blastapi.io'],
@@ -23,10 +18,7 @@ export const moonbeam = /*#__PURE__*/ defineChain({
     default: {
       name: 'Moonscan',
       url: 'https://moonscan.io',
-    },
-    etherscan: {
-      name: 'Moonscan',
-      url: 'https://moonscan.io',
+      apiUrl: 'https://api-moonbeam.moonscan.io/api',
     },
   },
   contracts: {

@@ -9,15 +9,8 @@ export const shibarium = /*#__PURE__*/ defineChain({
     default: {
       http: ['https://rpc.shibrpc.com'],
     },
-    public: {
-      http: ['https://rpc.shibrpc.com'],
-    },
   },
   blockExplorers: {
-    etherscan: {
-      name: 'Blockscout',
-      url: 'https://shibariumscan.io',
-    },
     default: {
       name: 'Blockscout',
       url: 'https://shibariumscan.io',

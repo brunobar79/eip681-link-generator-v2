@@ -1,4 +1,4 @@
-import { isAddress } from 'viem';
+import { isAddress, getAddress } from 'viem';
 import { EIP681Params, TransactionFormData } from '../types';
 
 /**
@@ -235,7 +235,14 @@ export function parseEIP681URL(url: string): any {
  * Validates an Ethereum address
  */
 export function validateAddress(address: string): boolean {
-  return isAddress(address);
+  try {
+    // viem 2.x requires proper checksum format, so normalize first
+    const checksummedAddress = getAddress(address);
+    return isAddress(checksummedAddress);
+  } catch {
+    // If getAddress throws, the address is invalid
+    return false;
+  }
 }
 
 /**

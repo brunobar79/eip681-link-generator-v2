@@ -4,7 +4,7 @@ import type { Account } from '../accounts/types.js'
 import type { ErrorType } from '../errors/utils.js'
 import type { ParseAccount } from '../types/account.js'
 import type { Chain } from '../types/chain.js'
-import type { WalletRpcSchema } from '../types/eip1193.js'
+import type { RpcSchema, WalletRpcSchema } from '../types/eip1193.js'
 import type { Prettify } from '../types/utils.js'
 import {
   type Client,
@@ -22,15 +22,18 @@ export type WalletClientConfig<
     | Account
     | Address
     | undefined,
+  rpcSchema extends RpcSchema | undefined = undefined,
 > = Prettify<
   Pick<
-    ClientConfig<transport, chain, accountOrAddress>,
+    ClientConfig<transport, chain, accountOrAddress, rpcSchema>,
     | 'account'
     | 'cacheTime'
+    | 'ccipRead'
     | 'chain'
     | 'key'
     | 'name'
     | 'pollingInterval'
+    | 'rpcSchema'
     | 'transport'
   >
 >
@@ -39,12 +42,15 @@ export type WalletClient<
   transport extends Transport = Transport,
   chain extends Chain | undefined = Chain | undefined,
   account extends Account | undefined = Account | undefined,
+  rpcSchema extends RpcSchema | undefined = undefined,
 > = Prettify<
   Client<
     transport,
     chain,
     account,
-    WalletRpcSchema,
+    rpcSchema extends RpcSchema
+      ? [...WalletRpcSchema, ...rpcSchema]
+      : WalletRpcSchema,
     WalletActions<chain, account>
   >
 >
@@ -52,15 +58,15 @@ export type WalletClient<
 export type CreateWalletClientErrorType = CreateClientErrorType | ErrorType
 
 /**
- * Creates a Wallet Client with a given [Transport](https://viem.sh/docs/clients/intro.html) configured for a [Chain](https://viem.sh/docs/clients/chains.html).
+ * Creates a Wallet Client with a given [Transport](https://viem.sh/docs/clients/intro) configured for a [Chain](https://viem.sh/docs/clients/chains).
  *
- * - Docs: https://viem.sh/docs/clients/wallet.html
+ * - Docs: https://viem.sh/docs/clients/wallet
  *
- * A Wallet Client is an interface to interact with [Ethereum Account(s)](https://ethereum.org/en/glossary/#account) and provides the ability to retrieve accounts, execute transactions, sign messages, etc. through [Wallet Actions](https://viem.sh/docs/actions/wallet/introduction.html).
+ * A Wallet Client is an interface to interact with [Ethereum Account(s)](https://ethereum.org/en/glossary/#account) and provides the ability to retrieve accounts, execute transactions, sign messages, etc. through [Wallet Actions](https://viem.sh/docs/actions/wallet/introduction).
  *
  * The Wallet Client supports signing over:
- * - [JSON-RPC Accounts](https://viem.sh/docs/clients/wallet.html#json-rpc-accounts) (e.g. Browser Extension Wallets, WalletConnect, etc).
- * - [Local Accounts](https://viem.sh/docs/clients/wallet.html#local-accounts-private-key-mnemonic-etc) (e.g. private key/mnemonic wallets).
+ * - [JSON-RPC Accounts](https://viem.sh/docs/clients/wallet#json-rpc-accounts) (e.g. Browser Extension Wallets, WalletConnect, etc).
+ * - [Local Accounts](https://viem.sh/docs/clients/wallet#local-accounts-private-key-mnemonic-etc) (e.g. private key/mnemonic wallets).
  *
  * @param config - {@link WalletClientConfig}
  * @returns A Wallet Client. {@link WalletClient}
@@ -91,9 +97,10 @@ export function createWalletClient<
   transport extends Transport,
   chain extends Chain | undefined = undefined,
   accountOrAddress extends Account | Address | undefined = undefined,
+  rpcSchema extends RpcSchema | undefined = undefined,
 >(
-  parameters: WalletClientConfig<transport, chain, accountOrAddress>,
-): WalletClient<transport, chain, ParseAccount<accountOrAddress>>
+  parameters: WalletClientConfig<transport, chain, accountOrAddress, rpcSchema>,
+): WalletClient<transport, chain, ParseAccount<accountOrAddress>, rpcSchema>
 
 export function createWalletClient(
   parameters: WalletClientConfig,
@@ -103,7 +110,7 @@ export function createWalletClient(
     ...parameters,
     key,
     name,
-    transport: (opts) => transport({ ...opts, retryCount: 0 }),
+    transport,
     type: 'walletClient',
   })
   return client.extend(walletActions)

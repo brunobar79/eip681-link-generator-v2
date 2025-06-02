@@ -23,7 +23,7 @@ export type GetTxpoolContentErrorType = RequestErrorType | ErrorType
 /**
  * Returns the details of all transactions currently pending for inclusion in the next block(s), as well as the ones that are being scheduled for future execution only.
  *
- * - Docs: https://viem.sh/docs/actions/test/getTxpoolContent.html
+ * - Docs: https://viem.sh/docs/actions/test/getTxpoolContent
  *
  * @param client - Client to use
  * @returns Transaction pool content. {@link GetTxpoolContentReturnType}
@@ -41,10 +41,10 @@ export type GetTxpoolContentErrorType = RequestErrorType | ErrorType
  * const content = await getTxpoolContent(client)
  */
 export async function getTxpoolContent<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
 ): Promise<GetTxpoolContentReturnType> {
   return await client.request({
     method: 'txpool_content',

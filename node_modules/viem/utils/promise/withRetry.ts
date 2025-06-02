@@ -1,30 +1,37 @@
 import type { ErrorType } from '../../errors/utils.js'
 import { wait } from '../wait.js'
 
+export type WithRetryParameters = {
+  // The delay (in ms) between retries.
+  delay?:
+    | ((config: { count: number; error: Error }) => number)
+    | number
+    | undefined
+  // The max number of times to retry.
+  retryCount?: number | undefined
+  // Whether or not to retry when an error is thrown.
+  shouldRetry?:
+    | (({
+        count,
+        error,
+      }: {
+        count: number
+        error: Error
+      }) => Promise<boolean> | boolean)
+    | undefined
+}
+
 export type WithRetryErrorType = ErrorType
 
-export function withRetry<TData>(
-  fn: () => Promise<TData>,
+export function withRetry<data>(
+  fn: () => Promise<data>,
   {
     delay: delay_ = 100,
     retryCount = 2,
     shouldRetry = () => true,
-  }: {
-    // The delay (in ms) between retries.
-    delay?: ((config: { count: number; error: Error }) => number) | number
-    // The max number of times to retry.
-    retryCount?: number
-    // Whether or not to retry when an error is thrown.
-    shouldRetry?: ({
-      count,
-      error,
-    }: {
-      count: number
-      error: Error
-    }) => Promise<boolean> | boolean
-  } = {},
+  }: WithRetryParameters = {},
 ) {
-  return new Promise<TData>((resolve, reject) => {
+  return new Promise<data>((resolve, reject) => {
     const attemptRetry = async ({ count = 0 } = {}) => {
       const retry = async ({ error }: { error: Error }) => {
         const delay =

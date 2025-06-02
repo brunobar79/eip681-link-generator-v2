@@ -19,7 +19,7 @@ export type DropTransactionErrorType = RequestErrorType | ErrorType
 /**
  * Removes a transaction from the mempool.
  *
- * - Docs: https://viem.sh/docs/actions/test/dropTransaction.html
+ * - Docs: https://viem.sh/docs/actions/test/dropTransaction
  *
  * @param client - Client to use
  * @param parameters - {@link DropTransactionParameters}
@@ -39,10 +39,10 @@ export type DropTransactionErrorType = RequestErrorType | ErrorType
  * })
  */
 export async function dropTransaction<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { hash }: DropTransactionParameters,
 ) {
   await client.request({

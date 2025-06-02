@@ -11,13 +11,13 @@ export type CreateBlockFilterReturnType = Filter<'block'>
 export type CreateBlockFilterErrorType = RequestErrorType | ErrorType
 
 /**
- * Creates a [`Filter`](https://viem.sh/docs/glossary/types.html#filter) to listen for new block hashes that can be used with [`getFilterChanges`](https://viem.sh/docs/actions/public/getFilterChanges.html).
+ * Creates a [`Filter`](https://viem.sh/docs/glossary/types#filter) to listen for new block hashes that can be used with [`getFilterChanges`](https://viem.sh/docs/actions/public/getFilterChanges).
  *
- * - Docs: https://viem.sh/docs/actions/public/createBlockFilter.html
+ * - Docs: https://viem.sh/docs/actions/public/createBlockFilter
  * - JSON-RPC Methods: [`eth_newBlockFilter`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_newBlockFilter)
  *
  * @param client - Client to use
- * @returns [`Filter`](https://viem.sh/docs/glossary/types.html#filter). {@link CreateBlockFilterReturnType}
+ * @returns [`Filter`](https://viem.sh/docs/glossary/types#filter). {@link CreateBlockFilterReturnType}
  *
  * @example
  * import { createPublicClient, http } from 'viem'
@@ -31,8 +31,8 @@ export type CreateBlockFilterErrorType = RequestErrorType | ErrorType
  * const filter = await createBlockFilter(client)
  * // { id: "0x345a6572337856574a76364e457a4366", type: 'block' }
  */
-export async function createBlockFilter<TChain extends Chain | undefined>(
-  client: Client<Transport, TChain>,
+export async function createBlockFilter<chain extends Chain | undefined>(
+  client: Client<Transport, chain>,
 ): Promise<CreateBlockFilterReturnType> {
   const getRequest = createFilterRequestScope(client, {
     method: 'eth_newBlockFilter',

@@ -16,7 +16,7 @@ export type LoadStateErrorType = RequestErrorType | ErrorType
 /**
  * Adds state previously dumped with `dumpState` to the current chain.
  *
- * - Docs: https://viem.sh/docs/actions/test/loadState.html
+ * - Docs: https://viem.sh/docs/actions/test/loadState
  *
  * @param client - Client to use
  * @param parameters - {@link LoadStateParameters}
@@ -34,10 +34,10 @@ export type LoadStateErrorType = RequestErrorType | ErrorType
  * await loadState(client, { state: '0x...' })
  */
 export async function loadState<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { state }: LoadStateParameters,
 ): Promise<LoadStateReturnType> {
   await client.request({

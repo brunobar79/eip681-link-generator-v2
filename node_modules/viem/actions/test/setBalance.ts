@@ -23,7 +23,7 @@ export type SetBalanceErrorType = RequestErrorType | ErrorType
 /**
  * Modifies the balance of an account.
  *
- * - Docs: https://viem.sh/docs/actions/test/setBalance.html
+ * - Docs: https://viem.sh/docs/actions/test/setBalance
  *
  * @param client - Client to use
  * @param parameters – {@link SetBalanceParameters}
@@ -44,10 +44,10 @@ export type SetBalanceErrorType = RequestErrorType | ErrorType
  * })
  */
 export async function setBalance<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { address, value }: SetBalanceParameters,
 ) {
   if (client.mode === 'ganache')

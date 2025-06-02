@@ -10,10 +10,6 @@ export const acala = /*#__PURE__*/ defineChain({
     decimals: 18,
   },
   rpcUrls: {
-    public: {
-      http: ['https://eth-rpc-acala.aca-api.network'],
-      webSocket: ['wss://eth-rpc-acala.aca-api.network'],
-    },
     default: {
       http: ['https://eth-rpc-acala.aca-api.network'],
       webSocket: ['wss://eth-rpc-acala.aca-api.network'],
@@ -23,6 +19,7 @@ export const acala = /*#__PURE__*/ defineChain({
     default: {
       name: 'Acala Blockscout',
       url: 'https://blockscout.acala.network',
+      apiUrl: 'https://blockscout.acala.network/api',
     },
   },
   testnet: false,

@@ -18,9 +18,9 @@ export type StopImpersonatingAccountParameters = {
 export type StopImpersonatingAccountErrorType = RequestErrorType | ErrorType
 
 /**
- * Stop impersonating an account after having previously used [`impersonateAccount`](https://viem.sh/docs/actions/test/impersonateAccount.html).
+ * Stop impersonating an account after having previously used [`impersonateAccount`](https://viem.sh/docs/actions/test/impersonateAccount).
  *
- * - Docs: https://viem.sh/docs/actions/test/stopImpersonatingAccount.html
+ * - Docs: https://viem.sh/docs/actions/test/stopImpersonatingAccount
  *
  * @param client - Client to use
  * @param parameters – {@link StopImpersonatingAccountParameters}
@@ -40,10 +40,10 @@ export type StopImpersonatingAccountErrorType = RequestErrorType | ErrorType
  * })
  */
 export async function stopImpersonatingAccount<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { address }: StopImpersonatingAccountParameters,
 ) {
   await client.request({

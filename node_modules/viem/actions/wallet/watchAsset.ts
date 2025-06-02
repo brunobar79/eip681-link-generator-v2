@@ -13,7 +13,7 @@ export type WatchAssetErrorType = RequestErrorType | ErrorType
 /**
  * Adds an EVM chain to the wallet.
  *
- * - Docs: https://viem.sh/docs/actions/wallet/watchAsset.html
+ * - Docs: https://viem.sh/docs/actions/wallet/watchAsset
  * - JSON-RPC Methods: [`eth_switchEthereumChain`](https://eips.ethereum.org/EIPS/eip-747)
  *
  * @param client - Client to use
@@ -39,15 +39,18 @@ export type WatchAssetErrorType = RequestErrorType | ErrorType
  * })
  */
 export async function watchAsset<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined = undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined = undefined,
 >(
-  client: Client<Transport, TChain, TAccount>,
+  client: Client<Transport, chain, account>,
   params: WatchAssetParameters,
 ): Promise<WatchAssetReturnType> {
-  const added = await client.request({
-    method: 'wallet_watchAsset',
-    params,
-  })
+  const added = await client.request(
+    {
+      method: 'wallet_watchAsset',
+      params,
+    },
+    { retryCount: 0 },
+  )
   return added
 }

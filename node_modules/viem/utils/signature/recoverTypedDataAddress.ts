@@ -1,6 +1,6 @@
 import type { Address, TypedData } from 'abitype'
 
-import type { ByteArray, Hex } from '../../types/misc.js'
+import type { ByteArray, Hex, Signature } from '../../types/misc.js'
 import type { TypedDataDefinition } from '../../types/typedData.js'
 
 import type { ErrorType } from '../../errors/utils.js'
@@ -11,10 +11,10 @@ import {
 } from './recoverAddress.js'
 
 export type RecoverTypedDataAddressParameters<
-  TTypedData extends TypedData | { [key: string]: unknown } = TypedData,
-  TPrimaryType extends string = string,
-> = TypedDataDefinition<TTypedData, TPrimaryType> & {
-  signature: Hex | ByteArray
+  typedData extends TypedData | Record<string, unknown> = TypedData,
+  primaryType extends keyof typedData | 'EIP712Domain' = keyof typedData,
+> = TypedDataDefinition<typedData, primaryType> & {
+  signature: Hex | ByteArray | Signature
 }
 
 export type RecoverTypedDataAddressReturnType = Address
@@ -25,25 +25,20 @@ export type RecoverTypedDataAddressErrorType =
   | ErrorType
 
 export async function recoverTypedDataAddress<
-  const TTypedData extends TypedData | { [key: string]: unknown },
-  TPrimaryType extends string = string,
->({
-  domain,
-  message,
-  primaryType,
-  signature,
-  types,
-}: RecoverTypedDataAddressParameters<
-  TTypedData,
-  TPrimaryType
->): Promise<RecoverTypedDataAddressReturnType> {
+  const typedData extends TypedData | Record<string, unknown>,
+  primaryType extends keyof typedData | 'EIP712Domain',
+>(
+  parameters: RecoverTypedDataAddressParameters<typedData, primaryType>,
+): Promise<RecoverTypedDataAddressReturnType> {
+  const { domain, message, primaryType, signature, types } =
+    parameters as unknown as RecoverTypedDataAddressParameters
   return recoverAddress({
     hash: hashTypedData({
       domain,
       message,
       primaryType,
       types,
-    } as unknown as RecoverTypedDataAddressParameters),
+    }),
     signature,
   })
 }

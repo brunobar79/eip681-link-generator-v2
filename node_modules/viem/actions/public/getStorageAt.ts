@@ -17,12 +17,12 @@ export type GetStorageAtParameters = {
   slot: Hex
 } & (
   | {
-      blockNumber?: never
-      blockTag?: BlockTag
+      blockNumber?: undefined
+      blockTag?: BlockTag | undefined
     }
   | {
-      blockNumber?: bigint
-      blockTag?: never
+      blockNumber?: bigint | undefined
+      blockTag?: undefined
     }
 )
 
@@ -36,7 +36,7 @@ export type GetStorageAtErrorType =
 /**
  * Returns the value from a storage slot at a given address.
  *
- * - Docs: https://viem.sh/docs/contract/getStorageAt.html
+ * - Docs: https://viem.sh/docs/contract/getStorageAt
  * - JSON-RPC Methods: [`eth_getStorageAt`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getstorageat)
  *
  * @param client - Client to use
@@ -57,8 +57,8 @@ export type GetStorageAtErrorType =
  *   slot: toHex(0),
  * })
  */
-export async function getStorageAt<TChain extends Chain | undefined>(
-  client: Client<Transport, TChain>,
+export async function getStorageAt<chain extends Chain | undefined>(
+  client: Client<Transport, chain>,
   { address, blockNumber, blockTag = 'latest', slot }: GetStorageAtParameters,
 ): Promise<GetStorageAtReturnType> {
   const blockNumberHex =

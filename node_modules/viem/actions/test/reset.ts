@@ -10,9 +10,9 @@ import type { RequestErrorType } from '../../utils/buildRequest.js'
 
 export type ResetParameters = {
   /** The block number to reset from. */
-  blockNumber?: bigint
+  blockNumber?: bigint | undefined
   /** The JSON RPC URL. */
-  jsonRpcUrl?: string
+  jsonRpcUrl?: string | undefined
 }
 
 export type ResetErrorType = RequestErrorType | ErrorType
@@ -20,7 +20,7 @@ export type ResetErrorType = RequestErrorType | ErrorType
 /**
  * Resets fork back to its original state.
  *
- * - Docs: https://viem.sh/docs/actions/test/reset.html
+ * - Docs: https://viem.sh/docs/actions/test/reset
  *
  * @param client - Client to use
  * @param parameters – {@link ResetParameters}
@@ -38,10 +38,10 @@ export type ResetErrorType = RequestErrorType | ErrorType
  * await reset(client, { blockNumber: 69420n })
  */
 export async function reset<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { blockNumber, jsonRpcUrl }: ResetParameters = {},
 ) {
   await client.request({

@@ -11,9 +11,9 @@ import type { RequestErrorType } from '../../utils/buildRequest.js'
 export type RemoveBlockTimestampIntervalErrorType = RequestErrorType | ErrorType
 
 /**
- * Removes [`setBlockTimestampInterval`](https://viem.sh/docs/actions/test/setBlockTimestampInterval.html) if it exists.
+ * Removes [`setBlockTimestampInterval`](https://viem.sh/docs/actions/test/setBlockTimestampInterval) if it exists.
  *
- * - Docs: https://viem.sh/docs/actions/test/removeBlockTimestampInterval.html
+ * - Docs: https://viem.sh/docs/actions/test/removeBlockTimestampInterval
  *
  * @param client - Client to use
  *
@@ -30,9 +30,9 @@ export type RemoveBlockTimestampIntervalErrorType = RequestErrorType | ErrorType
  * await removeBlockTimestampInterval(client)
  */
 export async function removeBlockTimestampInterval<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
->(client: TestClient<TestClientMode, Transport, TChain, TAccount, false>) {
+  chain extends Chain | undefined,
+  account extends Account | undefined,
+>(client: TestClient<TestClientMode, Transport, chain, account, false>) {
   await client.request({
     method: `${client.mode}_removeBlockTimestampInterval`,
   })

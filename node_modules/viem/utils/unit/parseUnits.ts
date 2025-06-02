@@ -1,3 +1,4 @@
+import { InvalidDecimalNumberError } from '../../errors/unit.js'
 import type { ErrorType } from '../../errors/utils.js'
 
 export type ParseUnitsErrorType = ErrorType
@@ -5,7 +6,7 @@ export type ParseUnitsErrorType = ErrorType
 /**
  * Multiplies a string representation of a number by a given exponent of base 10 (10exponent).
  *
- * - Docs: https://viem.sh/docs/utilities/parseUnits.html
+ * - Docs: https://viem.sh/docs/utilities/parseUnits
  *
  * @example
  * import { parseUnits } from 'viem'
@@ -14,12 +15,15 @@ export type ParseUnitsErrorType = ErrorType
  * // 420000000000n
  */
 export function parseUnits(value: string, decimals: number) {
+  if (!/^(-?)([0-9]*)\.?([0-9]*)$/.test(value))
+    throw new InvalidDecimalNumberError({ value })
+
   let [integer, fraction = '0'] = value.split('.')
 
   const negative = integer.startsWith('-')
   if (negative) integer = integer.slice(1)
 
-  // trim leading zeros.
+  // trim trailing zeros.
   fraction = fraction.replace(/(0+)$/, '')
 
   // round off if the fraction is larger than the number of decimals.

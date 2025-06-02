@@ -24,16 +24,16 @@ export type GetProofParameters = {
 } & (
   | {
       /** The block number. */
-      blockNumber?: bigint
-      blockTag?: never
+      blockNumber?: bigint | undefined
+      blockTag?: undefined
     }
   | {
-      blockNumber?: never
+      blockNumber?: undefined
       /**
        * The block tag.
        * @default 'latest'
        */
-      blockTag?: BlockTag
+      blockTag?: BlockTag | undefined
     }
 )
 
@@ -48,7 +48,7 @@ export type GetProofErrorType =
 /**
  * Returns the account and storage values of the specified account including the Merkle-proof.
  *
- * - Docs: https://viem.sh/docs/actions/public/getProof.html
+ * - Docs: https://viem.sh/docs/actions/public/getProof
  * - JSON-RPC Methods:
  *   - Calls [`eth_getProof`](https://eips.ethereum.org/EIPS/eip-1186)
  *
@@ -70,8 +70,8 @@ export type GetProofErrorType =
  *  storageKeys: ['0x...'],
  * })
  */
-export async function getProof<TChain extends Chain | undefined>(
-  client: Client<Transport, TChain>,
+export async function getProof<chain extends Chain | undefined>(
+  client: Client<Transport, chain>,
   {
     address,
     blockNumber,

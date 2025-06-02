@@ -14,7 +14,7 @@ const hexes = /*#__PURE__*/ Array.from({ length: 256 }, (_v, i) =>
 
 export type ToHexParameters = {
   /** The size (in bytes) of the output hex value. */
-  size?: number
+  size?: number | undefined
 }
 
 export type ToHexErrorType =
@@ -27,8 +27,8 @@ export type ToHexErrorType =
 /**
  * Encodes a string, number, bigint, or ByteArray into a hex string
  *
- * - Docs: https://viem.sh/docs/utilities/toHex.html
- * - Example: https://viem.sh/docs/utilities/toHex.html#usage
+ * - Docs: https://viem.sh/docs/utilities/toHex
+ * - Example: https://viem.sh/docs/utilities/toHex#usage
  *
  * @param value Value to encode.
  * @param opts Options.
@@ -64,7 +64,7 @@ export function toHex(
 
 export type BoolToHexOpts = {
   /** The size (in bytes) of the output hex value. */
-  size?: number
+  size?: number | undefined
 }
 
 export type BoolToHexErrorType = AssertSizeErrorType | PadErrorType | ErrorType
@@ -72,7 +72,7 @@ export type BoolToHexErrorType = AssertSizeErrorType | PadErrorType | ErrorType
 /**
  * Encodes a boolean into a hex string
  *
- * - Docs: https://viem.sh/docs/utilities/toHex.html#booltohex
+ * - Docs: https://viem.sh/docs/utilities/toHex#booltohex
  *
  * @param value Value to encode.
  * @param opts Options.
@@ -104,7 +104,7 @@ export function boolToHex(value: boolean, opts: BoolToHexOpts = {}): Hex {
 
 export type BytesToHexOpts = {
   /** The size (in bytes) of the output hex value. */
-  size?: number
+  size?: number | undefined
 }
 
 export type BytesToHexErrorType = AssertSizeErrorType | PadErrorType | ErrorType
@@ -112,7 +112,7 @@ export type BytesToHexErrorType = AssertSizeErrorType | PadErrorType | ErrorType
 /**
  * Encodes a bytes array into a hex string
  *
- * - Docs: https://viem.sh/docs/utilities/toHex.html#bytestohex
+ * - Docs: https://viem.sh/docs/utilities/toHex#bytestohex
  *
  * @param value Value to encode.
  * @param opts Options.
@@ -145,14 +145,14 @@ export function bytesToHex(value: ByteArray, opts: BytesToHexOpts = {}): Hex {
 export type NumberToHexOpts =
   | {
       /** Whether or not the number of a signed representation. */
-      signed?: boolean
+      signed?: boolean | undefined
       /** The size (in bytes) of the output hex value. */
       size: number
     }
   | {
-      signed?: never
+      signed?: undefined
       /** The size (in bytes) of the output hex value. */
-      size?: number
+      size?: number | undefined
     }
 
 export type NumberToHexErrorType =
@@ -163,7 +163,7 @@ export type NumberToHexErrorType =
 /**
  * Encodes a number or bigint into a hex string
  *
- * - Docs: https://viem.sh/docs/utilities/toHex.html#numbertohex
+ * - Docs: https://viem.sh/docs/utilities/toHex#numbertohex
  *
  * @param value Value to encode.
  * @param opts Options.
@@ -187,7 +187,7 @@ export function numberToHex(
 
   const value = BigInt(value_)
 
-  let maxValue
+  let maxValue: bigint | number | undefined
   if (size) {
     if (signed) maxValue = (1n << (BigInt(size) * 8n - 1n)) - 1n
     else maxValue = 2n ** (BigInt(size) * 8n) - 1n
@@ -208,9 +208,8 @@ export function numberToHex(
     })
   }
 
-  const hex = `0x${(signed && value < 0
-    ? (1n << BigInt(size * 8)) + BigInt(value)
-    : value
+  const hex = `0x${(
+    signed && value < 0 ? (1n << BigInt(size * 8)) + BigInt(value) : value
   ).toString(16)}` as Hex
   if (size) return pad(hex, { size }) as Hex
   return hex
@@ -218,7 +217,7 @@ export function numberToHex(
 
 export type StringToHexOpts = {
   /** The size (in bytes) of the output hex value. */
-  size?: number
+  size?: number | undefined
 }
 
 export type StringToHexErrorType = BytesToHexErrorType | ErrorType
@@ -228,7 +227,7 @@ const encoder = /*#__PURE__*/ new TextEncoder()
 /**
  * Encodes a UTF-8 string into a hex string
  *
- * - Docs: https://viem.sh/docs/utilities/toHex.html#stringtohex
+ * - Docs: https://viem.sh/docs/utilities/toHex#stringtohex
  *
  * @param value Value to encode.
  * @param opts Options.

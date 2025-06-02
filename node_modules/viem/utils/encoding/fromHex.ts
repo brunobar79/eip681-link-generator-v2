@@ -28,25 +28,25 @@ export function assertSize(
 }
 
 export type FromHexParameters<
-  TTo extends 'string' | 'bigint' | 'number' | 'bytes' | 'boolean',
+  to extends 'string' | 'bigint' | 'number' | 'bytes' | 'boolean',
 > =
-  | TTo
+  | to
   | {
       /** Size (in bytes) of the hex value. */
-      size?: number
+      size?: number | undefined
       /** Type to convert to. */
-      to: TTo
+      to: to
     }
 
-export type FromHexReturnType<TTo> = TTo extends 'string'
+export type FromHexReturnType<to> = to extends 'string'
   ? string
-  : TTo extends 'bigint'
+  : to extends 'bigint'
     ? bigint
-    : TTo extends 'number'
+    : to extends 'number'
       ? number
-      : TTo extends 'bytes'
+      : to extends 'bytes'
         ? ByteArray
-        : TTo extends 'boolean'
+        : to extends 'boolean'
           ? boolean
           : never
 
@@ -61,8 +61,8 @@ export type FromHexErrorType =
 /**
  * Decodes a hex string into a string, number, bigint, boolean, or byte array.
  *
- * - Docs: https://viem.sh/docs/utilities/fromHex.html
- * - Example: https://viem.sh/docs/utilities/fromHex.html#usage
+ * - Docs: https://viem.sh/docs/utilities/fromHex
+ * - Example: https://viem.sh/docs/utilities/fromHex#usage
  *
  * @param hex Hex string to decode.
  * @param toOrOpts Type to convert to or options.
@@ -87,23 +87,23 @@ export type FromHexErrorType =
  * // 'Hello world'
  */
 export function fromHex<
-  TTo extends 'string' | 'bigint' | 'number' | 'bytes' | 'boolean',
->(hex: Hex, toOrOpts: FromHexParameters<TTo>): FromHexReturnType<TTo> {
+  to extends 'string' | 'bigint' | 'number' | 'bytes' | 'boolean',
+>(hex: Hex, toOrOpts: FromHexParameters<to>): FromHexReturnType<to> {
   const opts = typeof toOrOpts === 'string' ? { to: toOrOpts } : toOrOpts
   const to = opts.to
 
-  if (to === 'number') return hexToNumber(hex, opts) as FromHexReturnType<TTo>
-  if (to === 'bigint') return hexToBigInt(hex, opts) as FromHexReturnType<TTo>
-  if (to === 'string') return hexToString(hex, opts) as FromHexReturnType<TTo>
-  if (to === 'boolean') return hexToBool(hex, opts) as FromHexReturnType<TTo>
-  return hexToBytes(hex, opts) as FromHexReturnType<TTo>
+  if (to === 'number') return hexToNumber(hex, opts) as FromHexReturnType<to>
+  if (to === 'bigint') return hexToBigInt(hex, opts) as FromHexReturnType<to>
+  if (to === 'string') return hexToString(hex, opts) as FromHexReturnType<to>
+  if (to === 'boolean') return hexToBool(hex, opts) as FromHexReturnType<to>
+  return hexToBytes(hex, opts) as FromHexReturnType<to>
 }
 
 export type HexToBigIntOpts = {
   /** Whether or not the number of a signed representation. */
-  signed?: boolean
+  signed?: boolean | undefined
   /** Size (in bytes) of the hex value. */
-  size?: number
+  size?: number | undefined
 }
 
 export type HexToBigIntErrorType = AssertSizeErrorType | ErrorType
@@ -111,7 +111,7 @@ export type HexToBigIntErrorType = AssertSizeErrorType | ErrorType
 /**
  * Decodes a hex value into a bigint.
  *
- * - Docs: https://viem.sh/docs/utilities/fromHex.html#hextobigint
+ * - Docs: https://viem.sh/docs/utilities/fromHex#hextobigint
  *
  * @param hex Hex value to decode.
  * @param opts Options.
@@ -144,7 +144,7 @@ export function hexToBigInt(hex: Hex, opts: HexToBigIntOpts = {}): bigint {
 
 export type HexToBoolOpts = {
   /** Size (in bytes) of the hex value. */
-  size?: number
+  size?: number | undefined
 }
 
 export type HexToBoolErrorType =
@@ -156,7 +156,7 @@ export type HexToBoolErrorType =
 /**
  * Decodes a hex value into a boolean.
  *
- * - Docs: https://viem.sh/docs/utilities/fromHex.html#hextobool
+ * - Docs: https://viem.sh/docs/utilities/fromHex#hextobool
  *
  * @param hex Hex value to decode.
  * @param opts Options.
@@ -190,7 +190,7 @@ export type HexToNumberErrorType = HexToBigIntErrorType | ErrorType
 /**
  * Decodes a hex string into a number.
  *
- * - Docs: https://viem.sh/docs/utilities/fromHex.html#hextonumber
+ * - Docs: https://viem.sh/docs/utilities/fromHex#hextonumber
  *
  * @param hex Hex value to decode.
  * @param opts Options.
@@ -212,7 +212,7 @@ export function hexToNumber(hex: Hex, opts: HexToNumberOpts = {}): number {
 
 export type HexToStringOpts = {
   /** Size (in bytes) of the hex value. */
-  size?: number
+  size?: number | undefined
 }
 
 export type HexToStringErrorType =
@@ -224,7 +224,7 @@ export type HexToStringErrorType =
 /**
  * Decodes a hex value into a UTF-8 string.
  *
- * - Docs: https://viem.sh/docs/utilities/fromHex.html#hextostring
+ * - Docs: https://viem.sh/docs/utilities/fromHex#hextostring
  *
  * @param hex Hex value to decode.
  * @param opts Options.

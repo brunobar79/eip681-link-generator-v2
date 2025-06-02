@@ -16,9 +16,9 @@ export type SetBlockTimestampIntervalParameters = {
 export type SetBlockTimestampIntervalErrorType = RequestErrorType | ErrorType
 
 /**
- * Similar to [`increaseTime`](https://viem.sh/docs/actions/test/increaseTime.html), but sets a block timestamp `interval`. The timestamp of future blocks will be computed as `lastBlock_timestamp` + `interval`.
+ * Similar to [`increaseTime`](https://viem.sh/docs/actions/test/increaseTime), but sets a block timestamp `interval`. The timestamp of future blocks will be computed as `lastBlock_timestamp` + `interval`.
  *
- * - Docs: https://viem.sh/docs/actions/test/setBlockTimestampInterval.html
+ * - Docs: https://viem.sh/docs/actions/test/setBlockTimestampInterval
  *
  * @param client - Client to use
  * @param parameters – {@link SetBlockTimestampIntervalParameters}
@@ -36,10 +36,10 @@ export type SetBlockTimestampIntervalErrorType = RequestErrorType | ErrorType
  * await setBlockTimestampInterval(client, { interval: 5 })
  */
 export async function setBlockTimestampInterval<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { interval }: SetBlockTimestampIntervalParameters,
 ) {
   const interval_ = (() => {

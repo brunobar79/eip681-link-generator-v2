@@ -2,7 +2,6 @@ import { defineChain } from '../../utils/chain/defineChain.js'
 
 export const pulsechainV4 = /*#__PURE__*/ defineChain({
   id: 943,
-  network: 'pulsechainV4',
   name: 'PulseChain V4',
   testnet: true,
   nativeCurrency: { name: 'V4 Pulse', symbol: 'v4PLS', decimals: 18 },
@@ -11,15 +10,12 @@ export const pulsechainV4 = /*#__PURE__*/ defineChain({
       http: ['https://rpc.v4.testnet.pulsechain.com'],
       webSocket: ['wss://ws.v4.testnet.pulsechain.com'],
     },
-    public: {
-      http: ['https://rpc.v4.testnet.pulsechain.com'],
-      webSocket: ['wss://ws.v4.testnet.pulsechain.com'],
-    },
   },
   blockExplorers: {
     default: {
       name: 'PulseScan',
       url: 'https://scan.v4.testnet.pulsechain.com',
+      apiUrl: 'https://scan.v4.testnet.pulsechain.com/api',
     },
   },
   contracts: {

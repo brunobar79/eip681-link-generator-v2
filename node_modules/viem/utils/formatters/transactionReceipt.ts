@@ -5,6 +5,7 @@ import type {
 } from '../../types/chain.js'
 import type { RpcTransactionReceipt } from '../../types/rpc.js'
 import type { TransactionReceipt } from '../../types/transaction.js'
+import type { ExactPartial } from '../../types/utils.js'
 import { hexToNumber } from '../encoding/fromHex.js'
 
 import { type DefineFormatterErrorType, defineFormatter } from './formatter.js'
@@ -12,14 +13,14 @@ import { formatLog } from './log.js'
 import { transactionType } from './transaction.js'
 
 export type FormattedTransactionReceipt<
-  TChain extends Chain | undefined = Chain | undefined,
+  chain extends Chain | undefined = undefined,
 > = ExtractChainFormatterReturnType<
-  TChain,
+  chain,
   'transactionReceipt',
   TransactionReceipt
 >
 
-const statuses = {
+export const receiptStatuses = {
   '0x0': 'reverted',
   '0x1': 'success',
 } as const
@@ -27,9 +28,9 @@ const statuses = {
 export type FormatTransactionReceiptErrorType = ErrorType
 
 export function formatTransactionReceipt(
-  transactionReceipt: Partial<RpcTransactionReceipt>,
+  transactionReceipt: ExactPartial<RpcTransactionReceipt>,
 ) {
-  return {
+  const receipt = {
     ...transactionReceipt,
     blockNumber: transactionReceipt.blockNumber
       ? BigInt(transactionReceipt.blockNumber)
@@ -54,7 +55,7 @@ export function formatTransactionReceipt(
       ? hexToNumber(transactionReceipt.transactionIndex)
       : null,
     status: transactionReceipt.status
-      ? statuses[transactionReceipt.status]
+      ? receiptStatuses[transactionReceipt.status]
       : null,
     type: transactionReceipt.type
       ? transactionType[
@@ -62,6 +63,13 @@ export function formatTransactionReceipt(
         ] || transactionReceipt.type
       : null,
   } as TransactionReceipt
+
+  if (transactionReceipt.blobGasPrice)
+    receipt.blobGasPrice = BigInt(transactionReceipt.blobGasPrice)
+  if (transactionReceipt.blobGasUsed)
+    receipt.blobGasUsed = BigInt(transactionReceipt.blobGasUsed)
+
+  return receipt
 }
 
 export type DefineTransactionReceiptErrorType =

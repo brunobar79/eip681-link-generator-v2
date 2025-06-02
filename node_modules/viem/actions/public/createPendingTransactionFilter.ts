@@ -13,13 +13,13 @@ export type CreatePendingTransactionFilterErrorType =
   | ErrorType
 
 /**
- * Creates a Filter to listen for new pending transaction hashes that can be used with [`getFilterChanges`](https://viem.sh/docs/actions/public/getFilterChanges.html).
+ * Creates a Filter to listen for new pending transaction hashes that can be used with [`getFilterChanges`](https://viem.sh/docs/actions/public/getFilterChanges).
  *
- * - Docs: https://viem.sh/docs/actions/public/createPendingTransactionFilter.html
+ * - Docs: https://viem.sh/docs/actions/public/createPendingTransactionFilter
  * - JSON-RPC Methods: [`eth_newPendingTransactionFilter`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_newpendingtransactionfilter)
  *
  * @param client - Client to use
- * @returns [`Filter`](https://viem.sh/docs/glossary/types.html#filter). {@link CreateBlockFilterReturnType}
+ * @returns [`Filter`](https://viem.sh/docs/glossary/types#filter). {@link CreateBlockFilterReturnType}
  *
  * @example
  * import { createPublicClient, http } from 'viem'
@@ -34,10 +34,10 @@ export type CreatePendingTransactionFilterErrorType =
  * // { id: "0x345a6572337856574a76364e457a4366", type: 'transaction' }
  */
 export async function createPendingTransactionFilter<
-  TTransport extends Transport,
-  TChain extends Chain | undefined,
+  transport extends Transport,
+  chain extends Chain | undefined,
 >(
-  client: Client<TTransport, TChain>,
+  client: Client<transport, chain>,
 ): Promise<CreatePendingTransactionFilterReturnType> {
   const getRequest = createFilterRequestScope(client, {
     method: 'eth_newPendingTransactionFilter',

@@ -3,7 +3,6 @@ import { defineChain } from '../../utils/chain/defineChain.js'
 export const cronos = /*#__PURE__*/ defineChain({
   id: 25,
   name: 'Cronos Mainnet',
-  network: 'cronos',
   nativeCurrency: {
     decimals: 18,
     name: 'Cronos',
@@ -11,10 +10,13 @@ export const cronos = /*#__PURE__*/ defineChain({
   },
   rpcUrls: {
     default: { http: ['https://evm.cronos.org'] },
-    public: { http: ['https://evm.cronos.org'] },
   },
   blockExplorers: {
-    default: { name: 'Cronoscan', url: 'https://cronoscan.com' },
+    default: {
+      name: 'Cronos Explorer',
+      url: 'https://explorer.cronos.org',
+      apiUrl: 'https://explorer-api.cronos.org/mainnet/api',
+    },
   },
   contracts: {
     multicall3: {

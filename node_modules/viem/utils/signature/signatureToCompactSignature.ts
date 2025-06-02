@@ -1,11 +1,7 @@
 import type { ErrorType } from '../../errors/utils.js'
 import type { CompactSignature, Signature } from '../../types/misc.js'
-import {
-  type BytesToHexErrorType,
-  type HexToBytesErrorType,
-  bytesToHex,
-  hexToBytes,
-} from '../index.js'
+import { type HexToBytesErrorType, hexToBytes } from '../encoding/toBytes.js'
+import { type BytesToHexErrorType, bytesToHex } from '../encoding/toHex.js'
 
 export type SignatureToCompactSignatureErrorType =
   | HexToBytesErrorType
@@ -22,7 +18,7 @@ export type SignatureToCompactSignatureErrorType =
  * signatureToCompactSignature({
  *   r: '0x68a020a209d3d56c46f38cc50a33f704f4a9a10a59377f8dd762ac66910e9b90',
  *   s: '0x7e865ad05c4035ab5792787d4a0297a43617ae897930a6fe4d822b8faea52064',
- *   v: 27n
+ *   yParity: 0
  * })
  * // {
  * //   r: '0x68a020a209d3d56c46f38cc50a33f704f4a9a10a59377f8dd762ac66910e9b90',
@@ -32,10 +28,10 @@ export type SignatureToCompactSignatureErrorType =
 export function signatureToCompactSignature(
   signature: Signature,
 ): CompactSignature {
-  const { r, s, v } = signature
-  const yParity = v - 27n
+  const { r, s, v, yParity } = signature
+  const yParity_ = Number(yParity ?? v! - 27n)
   let yParityAndS = s
-  if (yParity === 1n) {
+  if (yParity_ === 1) {
     const bytes = hexToBytes(s)
     bytes[0] |= 0x80
     yParityAndS = bytesToHex(bytes)

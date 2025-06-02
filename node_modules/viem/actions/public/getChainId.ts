@@ -19,7 +19,7 @@ export type GetChainIdErrorType =
 /**
  * Returns the chain ID associated with the current network.
  *
- * - Docs: https://viem.sh/docs/actions/public/getChainId.html
+ * - Docs: https://viem.sh/docs/actions/public/getChainId
  * - JSON-RPC Methods: [`eth_chainId`](https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_chainid)
  *
  * @param client - Client to use
@@ -38,11 +38,14 @@ export type GetChainIdErrorType =
  * // 1
  */
 export async function getChainId<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
->(client: Client<Transport, TChain, TAccount>): Promise<GetChainIdReturnType> {
-  const chainIdHex = await client.request({
-    method: 'eth_chainId',
-  })
+  chain extends Chain | undefined,
+  account extends Account | undefined,
+>(client: Client<Transport, chain, account>): Promise<GetChainIdReturnType> {
+  const chainIdHex = await client.request(
+    {
+      method: 'eth_chainId',
+    },
+    { dedupe: true },
+  )
   return hexToNumber(chainIdHex)
 }

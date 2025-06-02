@@ -10,13 +10,13 @@ export const kavaTestnet = /*#__PURE__*/ defineChain({
     decimals: 18,
   },
   rpcUrls: {
-    public: { http: ['https://evm.testnet.kava.io'] },
     default: { http: ['https://evm.testnet.kava.io'] },
   },
   blockExplorers: {
     default: {
       name: 'Kava EVM Testnet Explorer',
       url: 'https://testnet.kavascan.com/',
+      apiUrl: 'https://testnet.kavascan.com/api',
     },
   },
   contracts: {

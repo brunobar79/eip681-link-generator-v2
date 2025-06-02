@@ -19,7 +19,7 @@ import {
 export type GetEnsAvatarParameters = Prettify<
   Omit<GetEnsTextParameters, 'key'> & {
     /** Gateway urls to resolve IPFS and/or Arweave assets. */
-    gatewayUrls?: AssetGatewayUrls
+    assetGatewayUrls?: AssetGatewayUrls | undefined
   }
 >
 
@@ -33,12 +33,12 @@ export type GetEnsAvatarErrorType =
 /**
  * Gets the avatar of an ENS name.
  *
- * - Docs: https://viem.sh/docs/ens/actions/getEnsAvatar.html
+ * - Docs: https://viem.sh/docs/ens/actions/getEnsAvatar
  * - Examples: https://stackblitz.com/github/wevm/viem/tree/main/examples/ens
  *
- * Calls [`getEnsText`](https://viem.sh/docs/ens/actions/getEnsText.html) with `key` set to `'avatar'`.
+ * Calls [`getEnsText`](https://viem.sh/docs/ens/actions/getEnsText) with `key` set to `'avatar'`.
  *
- * Since ENS names prohibit certain forbidden characters (e.g. underscore) and have other validation rules, you likely want to [normalize ENS names](https://docs.ens.domains/contract-api-reference/name-processing#normalising-names) with [UTS-46 normalization](https://unicode.org/reports/tr46) before passing them to `getEnsAddress`. You can use the built-in [`normalize`](https://viem.sh/docs/ens/utilities/normalize.html) function for this.
+ * Since ENS names prohibit certain forbidden characters (e.g. underscore) and have other validation rules, you likely want to [normalize ENS names](https://docs.ens.domains/contract-api-reference/name-processing#normalising-names) with [UTS-46 normalization](https://unicode.org/reports/tr46) before passing them to `getEnsAddress`. You can use the built-in [`normalize`](https://viem.sh/docs/ens/utilities/normalize) function for this.
  *
  * @param client - Client to use
  * @param parameters - {@link GetEnsAvatarParameters}
@@ -58,13 +58,15 @@ export type GetEnsAvatarErrorType =
  * })
  * // 'https://ipfs.io/ipfs/Qma8mnp6xV3J2cRNf3mTth5C8nV11CAnceVinc3y8jSbio'
  */
-export async function getEnsAvatar<TChain extends Chain | undefined>(
-  client: Client<Transport, TChain>,
+export async function getEnsAvatar<chain extends Chain | undefined>(
+  client: Client<Transport, chain>,
   {
     blockNumber,
     blockTag,
-    gatewayUrls,
+    assetGatewayUrls,
     name,
+    gatewayUrls,
+    strict,
     universalResolverAddress,
   }: GetEnsAvatarParameters,
 ): Promise<GetEnsAvatarReturnType> {
@@ -78,10 +80,15 @@ export async function getEnsAvatar<TChain extends Chain | undefined>(
     key: 'avatar',
     name,
     universalResolverAddress,
+    gatewayUrls,
+    strict,
   })
   if (!record) return null
   try {
-    return await parseAvatarRecord(client, { record, gatewayUrls })
+    return await parseAvatarRecord(client, {
+      record,
+      gatewayUrls: assetGatewayUrls,
+    })
   } catch {
     return null
   }

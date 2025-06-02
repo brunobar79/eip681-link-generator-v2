@@ -2,7 +2,6 @@ import { defineChain } from '../../utils/chain/defineChain.js'
 
 export const crossbell = /*#__PURE__*/ defineChain({
   id: 3_737,
-  network: 'crossbell',
   name: 'Crossbell',
   nativeCurrency: {
     decimals: 18,
@@ -13,12 +12,13 @@ export const crossbell = /*#__PURE__*/ defineChain({
     default: {
       http: ['https://rpc.crossbell.io'],
     },
-    public: {
-      http: ['https://rpc.crossbell.io'],
-    },
   },
   blockExplorers: {
-    default: { name: 'CrossScan', url: 'https://scan.crossbell.io' },
+    default: {
+      name: 'CrossScan',
+      url: 'https://scan.crossbell.io',
+      apiUrl: 'https://scan.crossbell.io/api',
+    },
   },
   contracts: {
     multicall3: {

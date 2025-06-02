@@ -10,10 +10,6 @@ export const mandala = /*#__PURE__*/ defineChain({
     decimals: 18,
   },
   rpcUrls: {
-    public: {
-      http: ['https://eth-rpc-tc9.aca-staging.network'],
-      webSocket: ['wss://eth-rpc-tc9.aca-staging.network'],
-    },
     default: {
       http: ['https://eth-rpc-tc9.aca-staging.network'],
       webSocket: ['wss://eth-rpc-tc9.aca-staging.network'],
@@ -23,6 +19,7 @@ export const mandala = /*#__PURE__*/ defineChain({
     default: {
       name: 'Mandala Blockscout',
       url: 'https://blockscout.mandala.aca-staging.network',
+      apiUrl: 'https://blockscout.mandala.aca-staging.network/api',
     },
   },
   testnet: true,

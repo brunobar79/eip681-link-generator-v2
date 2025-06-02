@@ -15,7 +15,7 @@ export type CompactSignatureToSignatureErrorType =
  * @returns The compact signature in signature format.
  *
  * @example
- * compactSignatureToHex({
+ * compactSignatureToSignature({
  *   r: '0x68a020a209d3d56c46f38cc50a33f704f4a9a10a59377f8dd762ac66910e9b90',
  *   yParityAndS: '0x7e865ad05c4035ab5792787d4a0297a43617ae897930a6fe4d822b8faea52064',
  * })
@@ -30,8 +30,8 @@ export function compactSignatureToSignature({
   yParityAndS,
 }: CompactSignature): Signature {
   const yParityAndS_bytes = hexToBytes(yParityAndS)
-  const v = yParityAndS_bytes[0] & 0x80 ? 28n : 27n
+  const yParity = yParityAndS_bytes[0] & 0x80 ? 1 : 0
   const s = yParityAndS_bytes
-  if (v === 28n) s[0] &= 0x7f
-  return { r, s: bytesToHex(s), v }
+  if (yParity === 1) s[0] &= 0x7f
+  return { r, s: bytesToHex(s), yParity }
 }

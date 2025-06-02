@@ -19,7 +19,7 @@ export type SetNextBlockBaseFeePerGasErrorType = RequestErrorType | ErrorType
 /**
  * Sets the next block's base fee per gas.
  *
- * - Docs: https://viem.sh/docs/actions/test/setNextBlockBaseFeePerGas.html
+ * - Docs: https://viem.sh/docs/actions/test/setNextBlockBaseFeePerGas
  *
  * @param client - Client to use
  * @param parameters – {@link SetNextBlockBaseFeePerGasParameters}
@@ -39,10 +39,10 @@ export type SetNextBlockBaseFeePerGasErrorType = RequestErrorType | ErrorType
  * })
  */
 export async function setNextBlockBaseFeePerGas<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { baseFeePerGas }: SetNextBlockBaseFeePerGasParameters,
 ) {
   await client.request({

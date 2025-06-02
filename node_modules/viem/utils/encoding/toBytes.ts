@@ -15,7 +15,7 @@ const encoder = /*#__PURE__*/ new TextEncoder()
 
 export type ToBytesParameters = {
   /** Size of the output bytes. */
-  size?: number
+  size?: number | undefined
 }
 
 export type ToBytesErrorType =
@@ -29,8 +29,8 @@ export type ToBytesErrorType =
 /**
  * Encodes a UTF-8 string, hex value, bigint, number or boolean to a byte array.
  *
- * - Docs: https://viem.sh/docs/utilities/toBytes.html
- * - Example: https://viem.sh/docs/utilities/toBytes.html#usage
+ * - Docs: https://viem.sh/docs/utilities/toBytes
+ * - Example: https://viem.sh/docs/utilities/toBytes#usage
  *
  * @param value Value to encode.
  * @param opts Options.
@@ -64,7 +64,7 @@ export function toBytes(
 
 export type BoolToBytesOpts = {
   /** Size of the output bytes. */
-  size?: number
+  size?: number | undefined
 }
 
 export type BoolToBytesErrorType =
@@ -75,7 +75,7 @@ export type BoolToBytesErrorType =
 /**
  * Encodes a boolean into a byte array.
  *
- * - Docs: https://viem.sh/docs/utilities/toBytes.html#booltobytes
+ * - Docs: https://viem.sh/docs/utilities/toBytes#booltobytes
  *
  * @param value Boolean value to encode.
  * @param opts Options.
@@ -123,7 +123,7 @@ function charCodeToBase16(char: number) {
 
 export type HexToBytesOpts = {
   /** Size of the output bytes. */
-  size?: number
+  size?: number | undefined
 }
 
 export type HexToBytesErrorType = AssertSizeErrorType | PadErrorType | ErrorType
@@ -131,7 +131,7 @@ export type HexToBytesErrorType = AssertSizeErrorType | PadErrorType | ErrorType
 /**
  * Encodes a hex string into a byte array.
  *
- * - Docs: https://viem.sh/docs/utilities/toBytes.html#hextobytes
+ * - Docs: https://viem.sh/docs/utilities/toBytes#hextobytes
  *
  * @param hex Hex string to encode.
  * @param opts Options.
@@ -182,7 +182,7 @@ export type NumberToBytesErrorType =
 /**
  * Encodes a number into a byte array.
  *
- * - Docs: https://viem.sh/docs/utilities/toBytes.html#numbertobytes
+ * - Docs: https://viem.sh/docs/utilities/toBytes#numbertobytes
  *
  * @param value Number to encode.
  * @param opts Options.
@@ -198,14 +198,17 @@ export type NumberToBytesErrorType =
  * const data = numberToBytes(420, { size: 4 })
  * // Uint8Array([0, 0, 1, 164])
  */
-export function numberToBytes(value: bigint | number, opts?: NumberToHexOpts) {
+export function numberToBytes(
+  value: bigint | number,
+  opts?: NumberToHexOpts | undefined,
+) {
   const hex = numberToHex(value, opts)
   return hexToBytes(hex)
 }
 
 export type StringToBytesOpts = {
   /** Size of the output bytes. */
-  size?: number
+  size?: number | undefined
 }
 
 export type StringToBytesErrorType =
@@ -216,7 +219,7 @@ export type StringToBytesErrorType =
 /**
  * Encodes a UTF-8 string into a byte array.
  *
- * - Docs: https://viem.sh/docs/utilities/toBytes.html#stringtobytes
+ * - Docs: https://viem.sh/docs/utilities/toBytes#stringtobytes
  *
  * @param value String to encode.
  * @param opts Options.

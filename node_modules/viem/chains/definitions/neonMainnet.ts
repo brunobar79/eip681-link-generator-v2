@@ -9,9 +9,6 @@ export const neonMainnet = /*#__PURE__*/ defineChain({
     default: {
       http: ['https://neon-proxy-mainnet.solana.p2p.org'],
     },
-    public: {
-      http: ['https://neon-proxy-mainnet.solana.p2p.org'],
-    },
   },
   blockExplorers: {
     default: {
@@ -19,6 +16,11 @@ export const neonMainnet = /*#__PURE__*/ defineChain({
       url: 'https://neonscan.org',
     },
   },
-  contracts: {},
+  contracts: {
+    multicall3: {
+      address: '0xca11bde05977b3631167028862be2a173976ca11',
+      blockCreated: 206545524,
+    },
+  },
   testnet: false,
 })

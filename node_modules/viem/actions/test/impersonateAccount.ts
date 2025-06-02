@@ -20,7 +20,7 @@ export type ImpersonateAccountErrorType = RequestErrorType | ErrorType
 /**
  * Impersonate an account or contract address. This lets you send transactions from that account even if you don't have access to its private key.
  *
- * - Docs: https://viem.sh/docs/actions/test/impersonateAccount.html
+ * - Docs: https://viem.sh/docs/actions/test/impersonateAccount
  *
  * @param client - Client to use
  * @param parameters - {@link ImpersonateAccountParameters}
@@ -40,10 +40,10 @@ export type ImpersonateAccountErrorType = RequestErrorType | ErrorType
  * })
  */
 export async function impersonateAccount<
-  TChain extends Chain | undefined,
-  TAccount extends Account | undefined,
+  chain extends Chain | undefined,
+  account extends Account | undefined,
 >(
-  client: TestClient<TestClientMode, Transport, TChain, TAccount, false>,
+  client: TestClient<TestClientMode, Transport, chain, account, false>,
   { address }: ImpersonateAccountParameters,
 ) {
   await client.request({

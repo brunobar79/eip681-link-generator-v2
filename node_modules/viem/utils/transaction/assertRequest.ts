@@ -3,6 +3,7 @@ import {
   parseAccount,
 } from '../../accounts/utils/parseAccount.js'
 import type { SendTransactionParameters } from '../../actions/wallet/sendTransaction.js'
+import { maxUint256 } from '../../constants/number.js'
 import {
   InvalidAddressError,
   type InvalidAddressErrorType,
@@ -19,9 +20,12 @@ import {
 } from '../../errors/transaction.js'
 import type { ErrorType } from '../../errors/utils.js'
 import type { Chain } from '../../types/chain.js'
+import type { ExactPartial } from '../../types/utils.js'
 import { isAddress } from '../address/isAddress.js'
 
-export type AssertRequestParameters = Partial<SendTransactionParameters<Chain>>
+export type AssertRequestParameters = ExactPartial<
+  SendTransactionParameters<Chain>
+>
 
 export type AssertRequestErrorType =
   | InvalidAddressErrorType
@@ -50,7 +54,7 @@ export function assertRequest(args: AssertRequestParameters) {
   )
     throw new FeeConflictError()
 
-  if (maxFeePerGas && maxFeePerGas > 2n ** 256n - 1n)
+  if (maxFeePerGas && maxFeePerGas > maxUint256)
     throw new FeeCapTooHighError({ maxFeePerGas })
   if (
     maxPriorityFeePerGas &&
