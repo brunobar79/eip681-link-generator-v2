@@ -93,19 +93,30 @@ export default function TransactionForm() {
     if (!selectedChain) return;
 
     try {
-      // Resolve ENS name if necessary
+      // Validate and resolve address
       let resolvedAddress = data.toAddress;
       let ensResult = null;
       
-      if (data.toAddress && data.toAddress.includes('.')) {
-        ensResult = await processAddressInput(data.toAddress, selectedChain.chainId);
-        if (ensResult.isENS && ensResult.isValid && ensResult.address) {
-          resolvedAddress = ensResult.address;
-          setResolvedEnsResult(ensResult);
-        } else if (ensResult.isENS && !ensResult.isValid) {
+      if (!data.toAddress || !data.toAddress.trim()) {
+        toast.error('Please enter a valid address');
+        return;
+      }
+      
+      // Process the address input (validates both regular addresses and ENS names)
+      ensResult = await processAddressInput(data.toAddress, selectedChain.chainId);
+      
+      if (!ensResult.isValid) {
+        if (ensResult.isENS) {
           toast.error('Could not resolve ENS name');
-          return;
+        } else {
+          toast.error('Please enter a valid address');
         }
+        return;
+      }
+      
+      resolvedAddress = ensResult.address || data.toAddress;
+      if (ensResult.isENS && ensResult.address) {
+        setResolvedEnsResult(ensResult);
       }
 
       // Convert amount to proper decimal notation
@@ -276,6 +287,7 @@ export default function TransactionForm() {
         {/* To Address */}
         <div>
           <AddressInput
+            id="toAddress"
             value={watch('toAddress')}
             onChange={(value) => setValue('toAddress', value)}
             chainId={selectedChain?.chainId}
@@ -322,6 +334,7 @@ export default function TransactionForm() {
               </div>
             </div>
             <input
+              id="value"
               type="number"
               step="any"
               {...register('value', {

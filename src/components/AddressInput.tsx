@@ -17,6 +17,7 @@ interface AddressInputProps {
   error?: string;
   label?: string;
   required?: boolean;
+  id?: string;
 }
 
 export default function AddressInput({
@@ -26,7 +27,8 @@ export default function AddressInput({
   placeholder = "Enter wallet address or ENS name",
   error,
   label = "Address",
-  required = false
+  required = false,
+  id = "address-input"
 }: AddressInputProps) {
   const [ensResult, setEnsResult] = useState<ENSResult | null>(null);
   const [isResolving, setIsResolving] = useState(false);
@@ -118,13 +120,14 @@ export default function AddressInput({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="label">
+        <label className="label" htmlFor={id}>
           {label} {required && '*'}
         </label>
       )}
       
       <div className="relative">
         <input
+          id={id}
           type="text"
           value={value}
           onChange={handleInputChange}

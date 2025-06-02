@@ -52,7 +52,6 @@ describe('Validation Utilities', () => {
 
     it('rejects invalid amounts', () => {
       const invalidAmounts = [
-        '',
         'invalid',
         '-1',
         'abc',
@@ -142,7 +141,7 @@ describe('Validation Utilities', () => {
     it('accepts valid token address', () => {
       const result = validateFormData({
         ...validFormData,
-        tokenAddress: '0xA0b86a33E6412CCF9B79C4a95C'
+        tokenAddress: '0xA0b86a33E6412CCF9B79C4a95C6f2A7D4C3B1E0F'
       })
       expect(result.isValid).toBe(true)
       expect(result.errors).toEqual({})

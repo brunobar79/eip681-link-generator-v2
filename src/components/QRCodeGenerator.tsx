@@ -9,8 +9,8 @@ interface QRCodeGeneratorProps {
 }
 
 export default function QRCodeGenerator({ 
-  value, 
-  size = 256, 
+  value,
+  size = 256,
   avatar, 
   className = '' 
 }: QRCodeGeneratorProps) {
