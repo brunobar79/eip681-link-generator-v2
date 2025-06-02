@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import TransactionForm from '../TransactionForm'
 
@@ -86,7 +86,6 @@ describe('TransactionForm', () => {
   })
 
   it('changes network selection', async () => {
-    const user = userEvent.setup()
     render(<TransactionForm />)
 
     // Skip this test as the chain selector UI has changed
@@ -95,7 +94,6 @@ describe('TransactionForm', () => {
   })
 
   it('opens token selector when clicking token button', async () => {
-    const user = userEvent.setup()
     render(<TransactionForm />)
 
     // Skip this test as the token selector is no longer visible by default
@@ -104,10 +102,10 @@ describe('TransactionForm', () => {
   })
 
   it('selects token', async () => {
-    const user = userEvent.setup()
     render(<TransactionForm />)
 
     const addressInput = screen.getByLabelText(/to address/i)
+    const user = userEvent.setup()
     await user.type(addressInput, '0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
 
     // Skip token selection test as the UI has changed
@@ -125,7 +123,6 @@ describe('TransactionForm', () => {
   })
 
   it('toggles avatar inclusion', async () => {
-    const user = userEvent.setup()
     render(<TransactionForm />)
 
     // Skip avatar checkbox test as this feature may not be implemented yet

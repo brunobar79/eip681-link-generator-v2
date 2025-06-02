@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { 
-  generateEIP681URL, 
   generateETHTransferURL, 
   generateTokenTransferURL, 
   formDataToEIP681URL,

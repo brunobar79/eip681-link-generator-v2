@@ -86,7 +86,7 @@ describe('Token Search', () => {
         }
       })
 
-      const tokens = await searchTokensOnDexScreener('WBTC', 1)
+      await searchTokensOnDexScreener('WBTC', 1)
       
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.dexscreener.com/latest/dex/search?q=WBTC/ETH'
