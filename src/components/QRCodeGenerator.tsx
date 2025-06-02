@@ -130,7 +130,7 @@ export default function QRCodeGenerator({
   };
 
   return (
-    <div className={`flex flex-col items-center ${className}`}>
+    <div className={`flex flex-col items-center ${className}`} data-testid="qr-code">
       <div className="relative">
         <canvas
           ref={canvasRef}

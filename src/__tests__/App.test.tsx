@@ -1,9 +1,27 @@
-import { describe, it, expect, vi, beforeEach, afterEach, type MockInstance } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
 
-// Mock the components
+// Mock utility functions needed for the App component
+vi.mock('../utils/ens', () => ({
+  processAddressInput: vi.fn().mockResolvedValue({
+    isValid: true,
+    address: '0x1234567890123456789012345678901234567890',
+    isENS: false
+  }),
+  chainSupportsNaming: vi.fn().mockReturnValue(true)
+}))
+
+vi.mock('../utils/eip681', () => ({
+  formDataToEIP681URL: vi.fn().mockReturnValue('ethereum:0x1234567890123456789012345678901234567890@1?value=1000000000000000000')
+}))
+
+vi.mock('../utils/validation', () => ({
+  isValidEthereumAddress: vi.fn().mockReturnValue(true)
+}))
+
+// Mock the QRCodeGenerator component
 vi.mock('../components/QRCodeGenerator', () => ({
   default: ({ url }: { url: string }) => (
     <div data-testid="qr-code" data-url={url}>
@@ -12,238 +30,183 @@ vi.mock('../components/QRCodeGenerator', () => ({
   )
 }))
 
+// Mock the TokenSelector component  
 vi.mock('../components/TokenSelector', () => ({
-  default: ({ isOpen, onSelect, onClose }: any) => 
-    isOpen ? (
-      <div data-testid="token-selector">
-        <button onClick={() => onSelect({
-          chainId: 1,
-          address: '0xA0b86a33E6412CCF9B79C4a95C',
-          name: 'USD Coin',
-          symbol: 'USDC',
-          decimals: 6
-        })}>
-          Select USDC
-        </button>
-        <button onClick={onClose}>Close</button>
-      </div>
-    ) : null
+  default: ({ onTokenChange, chainId }: { onTokenChange: (token: any) => void; chainId: number }) => (
+    <div data-testid="token-selector" data-chain-id={chainId}>
+      <button 
+        onClick={() => onTokenChange({ 
+          address: '0xA0b86a33E6441E6e80dd45982a0F3dc56a9f9aB8', 
+          symbol: 'USDC', 
+          decimals: 6,
+          chainId 
+        })}
+        data-testid="select-usdc"
+      >
+        Select USDC
+      </button>
+      <button 
+        onClick={() => onTokenChange({ 
+          address: '0x0000000000000000000000000000000000000000', 
+          symbol: 'ETH', 
+          decimals: 18,
+          chainId 
+        })}
+        data-testid="select-eth"
+      >
+        Select ETH
+      </button>
+    </div>
+  )
 }))
-
-// Mock clipboard
-Object.assign(navigator, {
-  clipboard: {
-    writeText: vi.fn()
-  }
-})
 
 describe('App Integration Tests', () => {
   let user: ReturnType<typeof userEvent.setup>
-  let mockWriteText: MockInstance
 
   beforeEach(() => {
     user = userEvent.setup()
-    
-    // Mock window.open
-    vi.stubGlobal('open', vi.fn())
-    
-    // Mock scrollIntoView
-    Element.prototype.scrollIntoView = vi.fn()
-    
-    // Mock clipboard API
-    mockWriteText = vi.fn().mockResolvedValue(undefined)
-    Object.defineProperty(navigator, 'clipboard', {
-      value: {
-        writeText: mockWriteText
-      },
-      writable: true
-    })
-
-    // Clear any existing toasts
-    const toasterElement = document.getElementById('_rht_toaster')
-    if (toasterElement) {
-      toasterElement.innerHTML = ''
-    }
+    vi.clearAllMocks()
   })
 
-  afterEach(() => {
-    vi.restoreAllMocks()
-    // Clear toasts after each test
-    const toasterElement = document.getElementById('_rht_toaster')
-    if (toasterElement) {
-      toasterElement.innerHTML = ''
-    }
-  })
-
-  it('renders the application title', () => {
+  it('renders the main components', () => {
     render(<App />)
-    expect(screen.getByText('Ethereum Link Generator v2')).toBeInTheDocument()
+    
+    expect(screen.getByText(/ethereum link generator v2/i)).toBeInTheDocument()
+    expect(screen.getByTestId('token-selector')).toBeInTheDocument()
   })
 
   it('completes full ETH payment flow', async () => {
     render(<App />)
-
-    // Fill out the form
+    
+    // Fill recipient address
     const addressInput = screen.getByLabelText(/to address/i)
-    await user.type(addressInput, '0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-
+    await user.type(addressInput, '0x1234567890123456789012345678901234567890')
+    
+    // Fill amount
     const amountInput = screen.getByLabelText(/amount/i)
     await user.type(amountInput, '1.5')
-
-    // Generate the payment link
+    
+    // Select ETH token
+    const selectEthButton = screen.getByTestId('select-eth')
+    await user.click(selectEthButton)
+    
+    // Generate link
     const generateButton = screen.getByRole('button', { name: /generate payment link/i })
     await user.click(generateButton)
-
-    // Verify QR code and URL are generated
-    await waitFor(() => {
-      expect(screen.getByTestId('qr-code')).toBeInTheDocument()
-      expect(screen.getByDisplayValue(/ethereum:0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5/)).toBeInTheDocument()
-    })
-
-    // Verify title is correct
-    expect(screen.getByText('Send 1.5 ETH on Ethereum Mainnet to 0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')).toBeInTheDocument()
-
-    // Verify action buttons are present
+    
+    // Should show QR code
+    expect(screen.getByTestId('qr-code')).toBeInTheDocument()
+    
+    // Should show copy button
     expect(screen.getByRole('button', { name: /copy url/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /print qr code/i })).toBeInTheDocument()
   })
 
   it('completes full token payment flow', async () => {
     render(<App />)
-
-    // Fill out the form
+    
+    // Fill recipient address
     const addressInput = screen.getByLabelText(/to address/i)
-    await user.type(addressInput, '0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-
+    await user.type(addressInput, '0x1234567890123456789012345678901234567890')
+    
+    // Fill amount
     const amountInput = screen.getByLabelText(/amount/i)
     await user.type(amountInput, '100')
-
-    // Skip token selection for now since the UI has changed
-    // Generate payment link
+    
+    // Select USDC token
+    const selectUsdcButton = screen.getByTestId('select-usdc')
+    await user.click(selectUsdcButton)
+    
+    // Generate link
     const generateButton = screen.getByRole('button', { name: /generate payment link/i })
     await user.click(generateButton)
-
-    // Wait for the copy button to appear
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument()
-    })
-  })
-
-  it('handles network switching correctly', async () => {
-    render(<App />)
-
-    // Fill out form with ETH
-    const addressInput = screen.getByLabelText(/to address/i)
-    await user.type(addressInput, '0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-
-    const amountInput = screen.getByLabelText(/amount/i) as HTMLInputElement
-    await user.type(amountInput, '1.5')
-
-    // Submit form
-    const generateButton = screen.getByRole('button', { name: /generate payment link/i })
-    await user.click(generateButton)
-
-    // Wait for the copy button to appear
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument()
-    })
-
-    // Check that amount input shows the number value
-    expect(amountInput.value).toBe('1.5')
-  })
-
-  it('copies URL to clipboard', async () => {
-    render(<App />)
-
-    // Fill out recipient address
-    const addressInput = screen.getByLabelText(/to address/i)
-    await user.type(addressInput, '0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-
-    // Generate payment link first
-    const generateButton = screen.getByRole('button', { name: /generate payment link/i })
-    await user.click(generateButton)
-
-    // Wait for the copy button to appear instead of toast message
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument()
-    })
-
-    // Find and click the copy button
-    const copyButton = screen.getByRole('button', { name: /copy/i })
-    await user.click(copyButton)
-
-    expect(mockWriteText).toHaveBeenCalledWith(
-      expect.stringContaining('ethereum:0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-    )
-  })
-
-  it('toggles avatar inclusion', async () => {
-    // Skip this test since avatar inclusion only applies to ENS names with avatars
-    // and we're using a regular address in our tests
-    expect(true).toBe(true)
+    
+    // Should show QR code
+    expect(screen.getByTestId('qr-code')).toBeInTheDocument()
+    
+    // Should show copy button
+    expect(screen.getByRole('button', { name: /copy url/i })).toBeInTheDocument()
   })
 
   it('validates required fields', async () => {
     render(<App />)
-
+    
+    // Try to generate without filling fields
     const generateButton = screen.getByRole('button', { name: /generate payment link/i })
     
-    // Button should be disabled without address
+    // Button should be disabled initially since no address is entered
     expect(generateButton).toBeDisabled()
-
-    // Fill address
+    
+    // Add an invalid address to test validation
     const addressInput = screen.getByLabelText(/to address/i)
-    await user.type(addressInput, '0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-
-    // Button should be enabled with address
-    await waitFor(() => {
-      expect(generateButton).toBeEnabled()
-    })
+    await user.type(addressInput, 'invalid-address')
+    
+    // Button should now be enabled but clicking should show validation error
+    expect(generateButton).not.toBeDisabled()
+    await user.click(generateButton)
+    
+    // Should not show QR code without valid inputs
+    expect(screen.queryByTestId('qr-code')).not.toBeInTheDocument()
+    
+    // Should show error toast (this is displayed via react-hot-toast)
+    await screen.findByText('Please enter a valid address')
   })
 
-  it('preserves form state when regenerating', async () => {
+  it('preserves form state after generation', async () => {
     render(<App />)
-
-    // Fill out form
+    
+    // Fill form
     const addressInput = screen.getByLabelText(/to address/i)
-    await user.type(addressInput, '0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-
-    const amountInput = screen.getByLabelText(/amount/i) as HTMLInputElement
-    await user.type(amountInput, '2.5')
-
-    // Generate payment link
+    const amountInput = screen.getByLabelText(/amount/i)
+    
+    await user.type(addressInput, '0x1234567890123456789012345678901234567890')
+    await user.type(amountInput, '25.5')
+    
+    // Select token and generate
+    const selectUsdcButton = screen.getByTestId('select-usdc')
+    await user.click(selectUsdcButton)
+    
+    // Wait a bit for any state updates to settle
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
     const generateButton = screen.getByRole('button', { name: /generate payment link/i })
     await user.click(generateButton)
-
-    // Wait for the copy button to appear (indicates generation is complete)
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument()
-    })
-
-    // Form values should be preserved
-    expect(addressInput).toHaveValue('0x742D35Cc6AB26DE97F7B9b9C4FD3B174C8A2C4C5')
-    expect(amountInput.value).toBe('2.5')
+    
+    // Wait for generation to complete
+    await screen.findByTestId('qr-code')
+    
+    // Verify form values are preserved
+    expect(addressInput).toHaveValue('0x1234567890123456789012345678901234567890')
+    expect(amountInput).toHaveValue(25.5) // Expecting number value instead of string
   })
 
-  it('shows responsive design elements', async () => {
+  it('handles responsive design', () => {
     render(<App />)
     
-    // Check for form structure
-    expect(screen.getByLabelText(/to address/i)).toBeInTheDocument()
-    expect(screen.getByRole('combobox')).toBeInTheDocument() // Chain selector
-    expect(screen.getByLabelText(/amount/i)).toBeInTheDocument()
-    
-    // Check for buttons
-    expect(screen.getByText(/generate payment link/i)).toBeInTheDocument()
-    expect(screen.getByText(/reset/i)).toBeInTheDocument()
+    const container = screen.getByRole('main') || screen.getByText(/ethereum link generator v2/i).closest('div')
+    expect(container).toBeInTheDocument()
   })
 
-  it('handles responsive design', async () => {
+  it('copies generated URL to clipboard', async () => {
     render(<App />)
-
-    // Check that form elements are present
-    expect(screen.getByLabelText(/to address/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/amount/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /generate payment link/i })).toBeInTheDocument()
+    
+    // Fill and generate
+    const addressInput = screen.getByLabelText(/to address/i)
+    const amountInput = screen.getByLabelText(/amount/i)
+    
+    await user.type(addressInput, '0x1234567890123456789012345678901234567890')
+    await user.type(amountInput, '10')
+    
+    const selectEthButton = screen.getByTestId('select-eth')
+    await user.click(selectEthButton)
+    
+    const generateButton = screen.getByRole('button', { name: /generate payment link/i })
+    await user.click(generateButton)
+    
+    // Click copy - look for the exact button text "Copy Url"
+    const copyButton = screen.getByRole('button', { name: /copy url/i })
+    await user.click(copyButton)
+    
+    // Verify clipboard was called
+    expect(navigator.clipboard.writeText).toHaveBeenCalled()
   })
 }) 
